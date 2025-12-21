@@ -1,0 +1,20 @@
+package com.portfolio.smartgarage.repository;
+
+import com.portfolio.smartgarage.model.Vehicle;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
+
+    Optional<Vehicle> findByLicensePlate(String licensePlate);
+
+    Optional<Vehicle> findByVin(String vin);
+
+    List<Vehicle> findAllByOwnerPhoneNumber(String phoneNumber);
+
+    List<Vehicle> findAllByBrandContainingIgnoreCaseAndModelContainingIgnoreCaseAndYear(
+            String brand, String model, int year);
+}
