@@ -1,14 +1,14 @@
 package com.portfolio.smartgarage.mapper;
 
-import com.portfolio.smartgarage.dto.RegisterRequest;
-import com.portfolio.smartgarage.dto.AuthResponse;
+import com.portfolio.smartgarage.dto.RegisterRequestDto;
+import com.portfolio.smartgarage.dto.AuthResponseDto;
 import com.portfolio.smartgarage.model.User;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper {
 
-    public User toEntity(RegisterRequest request) {
+    public User toEntity(RegisterRequestDto request) {
         if (request == null) {
             return null;
         }
@@ -21,12 +21,12 @@ public class UserMapper {
         return user;
     }
 
-    public AuthResponse toAuthResponse(User user, String token) {
+    public AuthResponseDto toAuthResponse(User user, String token) {
         if (user == null) {
             return null;
         }
 
-        return AuthResponse.builder()
+        return AuthResponseDto.builder()
                 .token(token)
                 .id(user.getId())
                 .username(user.getUsername())
