@@ -1,7 +1,8 @@
 package com.portfolio.smartgarage.service;
 
-import com.portfolio.smartgarage.dto.LoginRequest;
-import com.portfolio.smartgarage.dto.RegisterRequest;
+import com.portfolio.smartgarage.dto.LoginRequestDto;
+import com.portfolio.smartgarage.dto.RegisterRequestDto;
+import com.portfolio.smartgarage.exception.ResourceAlreadyExistsException;
 import com.portfolio.smartgarage.mapper.UserMapper;
 import com.portfolio.smartgarage.model.Role;
 import com.portfolio.smartgarage.model.User;
@@ -24,11 +25,9 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtils jwtUtils;
     private final AuthenticationManager authenticationManager;
 
-    @Override
-    public void register(RegisterRequest request) {
-
+    public void register(RegisterRequestDto request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already exists");
+            throw new ResourceAlreadyExistsException("Email " + request.getEmail() + " is already in use.");
         }
 
         User user = userMapper.toEntity(request);
@@ -39,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String login(LoginRequest request) {
+    public String login(LoginRequestDto request) {
 
         Authentication authentication =
                 authenticationManager.authenticate(
