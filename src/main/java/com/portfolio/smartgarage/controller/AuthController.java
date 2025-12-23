@@ -1,7 +1,7 @@
 package com.portfolio.smartgarage.controller;
 
-import com.portfolio.smartgarage.dto.LoginRequest;
-import com.portfolio.smartgarage.dto.RegisterRequest;
+import com.portfolio.smartgarage.dto.LoginRequestDto;
+import com.portfolio.smartgarage.dto.RegisterRequestDto;
 import com.portfolio.smartgarage.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +18,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequestDto request) {
         authService.register(request);
         return ResponseEntity.ok("User registered successfully");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginRequestDto request) {
         String token = authService.login(request);
         return ResponseEntity.ok(Map.of("token", token));
     }
