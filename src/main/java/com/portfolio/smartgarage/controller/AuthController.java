@@ -1,14 +1,13 @@
 package com.portfolio.smartgarage.controller;
 
-import com.portfolio.smartgarage.dto.LoginRequestDto;
-import com.portfolio.smartgarage.dto.RegisterRequestDto;
-import com.portfolio.smartgarage.service.AuthService;
+import com.portfolio.smartgarage.dto.auth.LoginRequestDto;
+import com.portfolio.smartgarage.dto.auth.RegisterRequestDto;
+import com.portfolio.smartgarage.dto.auth.AuthResponseDto;
+import com.portfolio.smartgarage.service.interfaces.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -24,8 +23,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginRequestDto request) {
+    public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
         String token = authService.login(request);
-        return ResponseEntity.ok(Map.of("token", token));
+        AuthResponseDto response = AuthResponseDto.builder().token(token).build();
+        return ResponseEntity.ok(response);
     }
 }

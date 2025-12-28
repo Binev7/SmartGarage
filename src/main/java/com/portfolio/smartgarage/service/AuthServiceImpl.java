@@ -1,13 +1,14 @@
 package com.portfolio.smartgarage.service;
 
-import com.portfolio.smartgarage.dto.LoginRequestDto;
-import com.portfolio.smartgarage.dto.RegisterRequestDto;
+import com.portfolio.smartgarage.dto.auth.LoginRequestDto;
+import com.portfolio.smartgarage.dto.auth.RegisterRequestDto;
 import com.portfolio.smartgarage.exception.ResourceAlreadyExistsException;
 import com.portfolio.smartgarage.mapper.UserMapper;
 import com.portfolio.smartgarage.model.Role;
 import com.portfolio.smartgarage.model.User;
 import com.portfolio.smartgarage.repository.UserRepository;
 import com.portfolio.smartgarage.security.JwtUtils;
+import com.portfolio.smartgarage.service.interfaces.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
