@@ -23,4 +23,9 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
     @Transactional
     @Query("delete from Visit v where v.vehicle.id = :vehicleId")
     void deleteAllByVehicleId(@Param("vehicleId") Long vehicleId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM visit_services WHERE service_id = :serviceId", nativeQuery = true)
+    void deleteAllByServiceId(@Param("serviceId") Long serviceId);
 }

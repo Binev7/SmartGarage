@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -26,4 +27,6 @@ public class CreateVisitDto {
     private LocalDateTime date;
 
     private String additionalComments;
+
+    private List<Long> serviceIds;
 }

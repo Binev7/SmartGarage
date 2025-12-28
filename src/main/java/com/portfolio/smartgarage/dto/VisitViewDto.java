@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -31,5 +33,8 @@ public class VisitViewDto {
     private String vehicleModel;
     private int vehicleYear;
     private String vehicleLicensePlate;
-}
 
+
+    private List<ServiceSummaryDto> services;
+    private BigDecimal totalPrice;
+}

@@ -3,6 +3,9 @@ package com.portfolio.smartgarage.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "visits")
@@ -34,4 +37,16 @@ public class Visit {
     @Column(nullable = false, length = 20)
     @Builder.Default
     private VisitStatus status = VisitStatus.PENDING;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "visit_services",
+            joinColumns = @JoinColumn(name = "visit_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
+    @Builder.Default
+    private List<Service> services = new ArrayList<>();
+
+    @Column(name = "total_price", precision = 12, scale = 2)
+    private BigDecimal totalPrice;
 }
