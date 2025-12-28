@@ -1,8 +1,8 @@
 package com.portfolio.smartgarage.controller;
 
-import com.portfolio.smartgarage.dto.CreateVisitDto;
-import com.portfolio.smartgarage.dto.VisitViewDto;
-import com.portfolio.smartgarage.service.VisitService;
+import com.portfolio.smartgarage.dto.visit.CreateVisitDto;
+import com.portfolio.smartgarage.dto.visit.VisitViewDto;
+import com.portfolio.smartgarage.service.interfaces.VisitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
