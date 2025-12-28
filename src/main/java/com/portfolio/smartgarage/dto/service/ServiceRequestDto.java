@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.dto;
+package com.portfolio.smartgarage.dto.service;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
