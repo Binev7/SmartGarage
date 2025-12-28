@@ -2,9 +2,7 @@ package com.portfolio.smartgarage.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "visits")
@@ -19,23 +17,21 @@ public class Visit {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
 
     @Column(nullable = false)
-    private LocalDate date;
+    private LocalDateTime date;
 
-    @ManyToMany
-    @JoinTable(
-            name = "visit_services",
-            joinColumns = @JoinColumn(name = "visit_id"),
-            inverseJoinColumns = @JoinColumn(name = "service_id")
-    )
-    private List<Service> services;
-
-    private BigDecimal totalPrice;
+    @Column(length = 500)
+    private String additionalComments;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private VisitStatus status;
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private VisitStatus status = VisitStatus.PENDING;
 }
