@@ -1,8 +1,8 @@
 package com.portfolio.smartgarage.controller;
 
-import com.portfolio.smartgarage.dto.VehicleRequestDto;
-import com.portfolio.smartgarage.dto.VehicleResponseDto;
-import com.portfolio.smartgarage.service.VehicleService;
+import com.portfolio.smartgarage.dto.vehicle.VehicleRequestDto;
+import com.portfolio.smartgarage.dto.vehicle.VehicleResponseDto;
+import com.portfolio.smartgarage.service.interfaces.VehicleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

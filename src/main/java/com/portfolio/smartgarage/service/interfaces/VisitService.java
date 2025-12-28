@@ -1,7 +1,7 @@
-package com.portfolio.smartgarage.service;
+package com.portfolio.smartgarage.service.interfaces;
 
-import com.portfolio.smartgarage.dto.CreateVisitDto;
-import com.portfolio.smartgarage.dto.VisitViewDto;
+import com.portfolio.smartgarage.dto.visit.CreateVisitDto;
+import com.portfolio.smartgarage.dto.visit.VisitViewDto;
 
 import java.util.List;
 

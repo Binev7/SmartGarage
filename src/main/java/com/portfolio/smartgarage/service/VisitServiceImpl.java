@@ -1,7 +1,7 @@
 package com.portfolio.smartgarage.service;
 
-import com.portfolio.smartgarage.dto.CreateVisitDto;
-import com.portfolio.smartgarage.dto.VisitViewDto;
+import com.portfolio.smartgarage.dto.visit.CreateVisitDto;
+import com.portfolio.smartgarage.dto.visit.VisitViewDto;
 import com.portfolio.smartgarage.exception.ResourceNotFoundException;
 import com.portfolio.smartgarage.exception.InvalidDataException;
 import com.portfolio.smartgarage.mapper.VisitMapper;
@@ -14,6 +14,7 @@ import com.portfolio.smartgarage.repository.ServiceRepository;
 import com.portfolio.smartgarage.repository.UserRepository;
 import com.portfolio.smartgarage.repository.VehicleRepository;
 import com.portfolio.smartgarage.repository.VisitRepository;
+import com.portfolio.smartgarage.service.interfaces.VisitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,15 +48,18 @@ public class VisitServiceImpl implements VisitService {
         visit.setVehicle(vehicle);
         visit.setStatus(VisitStatus.PENDING);
 
+        // Attach services if provided
         if (dto.getServiceIds() != null && !dto.getServiceIds().isEmpty()) {
             List<Service> services = serviceRepository.findAllById(dto.getServiceIds());
             if (services.size() != dto.getServiceIds().size()) {
+                // Some service IDs not found
                 List<Long> foundIds = services.stream().map(Service::getId).collect(Collectors.toList());
                 List<Long> missing = dto.getServiceIds().stream().filter(id -> !foundIds.contains(id)).collect(Collectors.toList());
                 throw new ResourceNotFoundException("Services not found for ids: " + missing);
             }
             visit.setServices(services);
 
+            // compute total price
             BigDecimal total = services.stream()
                     .map(Service::getPrice)
                     .filter(p -> p != null)
@@ -73,10 +77,16 @@ public class VisitServiceImpl implements VisitService {
             throw new ResourceNotFoundException("User with id " + userId + " not found");
         }
 
-        return visitRepository.findAllByUserId(userId)
+        List<VisitViewDto> result = visitRepository.findAllByUserId(userId)
                 .stream()
                 .map(visitMapper::toDto)
                 .collect(Collectors.toList());
+
+        if (result.isEmpty()) {
+            throw new ResourceNotFoundException("No visits found for user with id " + userId);
+        }
+
+        return result;
     }
 
     @Override
@@ -85,10 +95,16 @@ public class VisitServiceImpl implements VisitService {
             throw new ResourceNotFoundException("Vehicle with id " + vehicleId + " not found");
         }
 
-        return visitRepository.findAllByVehicleId(vehicleId)
+        List<VisitViewDto> result = visitRepository.findAllByVehicleId(vehicleId)
                 .stream()
                 .map(visitMapper::toDto)
                 .collect(Collectors.toList());
+
+        if (result.isEmpty()) {
+            throw new ResourceNotFoundException("No visits found for vehicle with id " + vehicleId);
+        }
+
+        return result;
     }
 
     @Override

@@ -1,8 +1,8 @@
 package com.portfolio.smartgarage.mapper;
 
-import com.portfolio.smartgarage.dto.CreateVisitDto;
-import com.portfolio.smartgarage.dto.ServiceSummaryDto;
-import com.portfolio.smartgarage.dto.VisitViewDto;
+import com.portfolio.smartgarage.dto.visit.CreateVisitDto;
+import com.portfolio.smartgarage.dto.service.ServiceSummaryDto;
+import com.portfolio.smartgarage.dto.visit.VisitViewDto;
 import com.portfolio.smartgarage.model.Service;
 import com.portfolio.smartgarage.model.Visit;
 import org.springframework.stereotype.Component;

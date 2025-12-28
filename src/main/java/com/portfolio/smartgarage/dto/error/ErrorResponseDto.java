@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.dto;
+package com.portfolio.smartgarage.dto.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,7 +1,7 @@
-package com.portfolio.smartgarage.service;
+package com.portfolio.smartgarage.service.interfaces;
 
-import com.portfolio.smartgarage.dto.VehicleRequestDto;
-import com.portfolio.smartgarage.dto.VehicleResponseDto;
+import com.portfolio.smartgarage.dto.vehicle.VehicleRequestDto;
+import com.portfolio.smartgarage.dto.vehicle.VehicleResponseDto;
 
 import java.util.List;
 
@@ -15,4 +15,3 @@ public interface VehicleService {
 
     void deleteVehicle(Long vehicleId);
 }
-

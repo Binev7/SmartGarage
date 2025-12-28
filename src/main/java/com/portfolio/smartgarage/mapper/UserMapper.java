@@ -1,7 +1,7 @@
 package com.portfolio.smartgarage.mapper;
 
-import com.portfolio.smartgarage.dto.RegisterRequestDto;
-import com.portfolio.smartgarage.dto.AuthResponseDto;
+import com.portfolio.smartgarage.dto.auth.RegisterRequestDto;
+import com.portfolio.smartgarage.dto.auth.AuthResponseDto;
 import com.portfolio.smartgarage.model.User;
 import org.springframework.stereotype.Component;
 

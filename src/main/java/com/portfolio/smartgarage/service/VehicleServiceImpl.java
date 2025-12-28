@@ -1,7 +1,7 @@
 package com.portfolio.smartgarage.service;
 
-import com.portfolio.smartgarage.dto.VehicleRequestDto;
-import com.portfolio.smartgarage.dto.VehicleResponseDto;
+import com.portfolio.smartgarage.dto.vehicle.VehicleRequestDto;
+import com.portfolio.smartgarage.dto.vehicle.VehicleResponseDto;
 import com.portfolio.smartgarage.exception.ResourceAlreadyExistsException;
 import com.portfolio.smartgarage.exception.ResourceNotFoundException;
 import com.portfolio.smartgarage.mapper.VehicleMapper;
@@ -10,6 +10,7 @@ import com.portfolio.smartgarage.model.Vehicle;
 import com.portfolio.smartgarage.repository.UserRepository;
 import com.portfolio.smartgarage.repository.VehicleRepository;
 import com.portfolio.smartgarage.repository.VisitRepository;
+import com.portfolio.smartgarage.service.interfaces.VehicleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,10 +61,16 @@ public class VehicleServiceImpl implements VehicleService {
                 .orElseThrow(() -> new ResourceNotFoundException("User with id " + userId + " not found"));
 
         List<Vehicle> vehicles = vehicleRepository.findAll();
-        return vehicles.stream()
+        List<VehicleResponseDto> result = vehicles.stream()
                 .filter(v -> v.getOwner() != null && v.getOwner().getId().equals(owner.getId()))
                 .map(vehicleMapper::toDto)
                 .collect(Collectors.toList());
+
+        if (result.isEmpty()) {
+            throw new ResourceNotFoundException("No vehicles found for user with id " + userId);
+        }
+
+        return result;
     }
 
     @Override

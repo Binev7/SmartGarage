@@ -1,7 +1,7 @@
 package com.portfolio.smartgarage.controller;
 
 
-import com.portfolio.smartgarage.dto.ErrorResponseDto;
+import com.portfolio.smartgarage.dto.error.ErrorResponseDto;
 import com.portfolio.smartgarage.exception.ExternalServiceException;
 import com.portfolio.smartgarage.exception.InvalidDataException;
 import com.portfolio.smartgarage.exception.ResourceAlreadyExistsException;
