@@ -1,9 +1,13 @@
 package com.portfolio.smartgarage.mapper;
 
 import com.portfolio.smartgarage.dto.CreateVisitDto;
+import com.portfolio.smartgarage.dto.ServiceSummaryDto;
 import com.portfolio.smartgarage.dto.VisitViewDto;
+import com.portfolio.smartgarage.model.Service;
 import com.portfolio.smartgarage.model.Visit;
 import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
 
 @Component
 public class VisitMapper {
@@ -16,7 +20,7 @@ public class VisitMapper {
     }
 
     public VisitViewDto toDto(Visit visit) {
-        return VisitViewDto.builder()
+        VisitViewDto.VisitViewDtoBuilder builder = VisitViewDto.builder()
                 .id(visit.getId())
                 .date(visit.getDate())
                 .additionalComments(visit.getAdditionalComments())
@@ -32,7 +36,20 @@ public class VisitMapper {
                 .vehicleModel(visit.getVehicle().getModel())
                 .vehicleYear(visit.getVehicle().getYear())
                 .vehicleLicensePlate(visit.getVehicle().getLicensePlate())
+                .totalPrice(visit.getTotalPrice());
+
+        if (visit.getServices() != null && !visit.getServices().isEmpty()) {
+            builder.services(visit.getServices().stream().map(this::serviceToSummary).collect(Collectors.toList()));
+        }
+
+        return builder.build();
+    }
+
+    private ServiceSummaryDto serviceToSummary(Service s) {
+        return ServiceSummaryDto.builder()
+                .id(s.getId())
+                .name(s.getName())
+                .price(s.getPrice())
                 .build();
     }
 }
-
