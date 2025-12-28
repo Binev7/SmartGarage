@@ -1,5 +1,6 @@
-package com.portfolio.smartgarage.dto;
+package com.portfolio.smartgarage.dto.visit;
 
+import com.portfolio.smartgarage.dto.service.ServiceSummaryDto;
 import com.portfolio.smartgarage.model.VisitStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

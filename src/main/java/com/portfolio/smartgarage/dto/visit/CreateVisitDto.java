@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.dto;
+package com.portfolio.smartgarage.dto.visit;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
