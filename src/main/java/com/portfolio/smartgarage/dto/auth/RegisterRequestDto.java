@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.dto;
+package com.portfolio.smartgarage.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
