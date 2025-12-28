@@ -5,29 +5,32 @@ import com.portfolio.smartgarage.dto.VisitViewDto;
 import com.portfolio.smartgarage.exception.ResourceNotFoundException;
 import com.portfolio.smartgarage.exception.InvalidDataException;
 import com.portfolio.smartgarage.mapper.VisitMapper;
+import com.portfolio.smartgarage.model.Service;
 import com.portfolio.smartgarage.model.User;
 import com.portfolio.smartgarage.model.Vehicle;
 import com.portfolio.smartgarage.model.Visit;
 import com.portfolio.smartgarage.model.VisitStatus;
+import com.portfolio.smartgarage.repository.ServiceRepository;
 import com.portfolio.smartgarage.repository.UserRepository;
 import com.portfolio.smartgarage.repository.VehicleRepository;
 import com.portfolio.smartgarage.repository.VisitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@org.springframework.stereotype.Service
 @RequiredArgsConstructor
 public class VisitServiceImpl implements VisitService {
 
     private final VisitRepository visitRepository;
     private final UserRepository userRepository;
     private final VehicleRepository vehicleRepository;
+    private final ServiceRepository serviceRepository;
     private final VisitMapper visitMapper;
 
     @Override
@@ -43,6 +46,22 @@ public class VisitServiceImpl implements VisitService {
         visit.setUser(user);
         visit.setVehicle(vehicle);
         visit.setStatus(VisitStatus.PENDING);
+
+        if (dto.getServiceIds() != null && !dto.getServiceIds().isEmpty()) {
+            List<Service> services = serviceRepository.findAllById(dto.getServiceIds());
+            if (services.size() != dto.getServiceIds().size()) {
+                List<Long> foundIds = services.stream().map(Service::getId).collect(Collectors.toList());
+                List<Long> missing = dto.getServiceIds().stream().filter(id -> !foundIds.contains(id)).collect(Collectors.toList());
+                throw new ResourceNotFoundException("Services not found for ids: " + missing);
+            }
+            visit.setServices(services);
+
+            BigDecimal total = services.stream()
+                    .map(Service::getPrice)
+                    .filter(p -> p != null)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            visit.setTotalPrice(total);
+        }
 
         Visit savedVisit = visitRepository.save(visit);
         return visitMapper.toDto(savedVisit);

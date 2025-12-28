@@ -12,4 +12,6 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
     List<Service> findByNameContainingIgnoreCase(String name);
 
     List<Service> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
+
+    boolean existsByNameIgnoreCase(String name);
 }
