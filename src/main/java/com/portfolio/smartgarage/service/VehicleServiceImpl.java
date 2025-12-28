@@ -9,6 +9,7 @@ import com.portfolio.smartgarage.model.User;
 import com.portfolio.smartgarage.model.Vehicle;
 import com.portfolio.smartgarage.repository.UserRepository;
 import com.portfolio.smartgarage.repository.VehicleRepository;
+import com.portfolio.smartgarage.repository.VisitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ public class VehicleServiceImpl implements VehicleService {
     private final VehicleRepository vehicleRepository;
     private final UserRepository userRepository;
     private final VehicleMapper vehicleMapper;
+    private final VisitRepository visitRepository;
 
     @Override
     @Transactional
@@ -69,7 +71,9 @@ public class VehicleServiceImpl implements VehicleService {
     public void deleteVehicle(Long vehicleId) {
         Vehicle v = vehicleRepository.findById(vehicleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle with id " + vehicleId + " not found"));
+
+        visitRepository.deleteAllByVehicleId(vehicleId);
+
         vehicleRepository.delete(v);
     }
 }
-

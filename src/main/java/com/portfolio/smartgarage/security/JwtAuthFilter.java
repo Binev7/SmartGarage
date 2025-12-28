@@ -30,23 +30,30 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
+        log.debug("Authorization header: {}", authHeader);
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.debug("No Bearer token found in request");
             filterChain.doFilter(request, response);
             return;
         }
 
         String jwt = authHeader.substring(7);
+        log.debug("JWT token extracted: {}", jwt.substring(0, Math.min(20, jwt.length())) + "...");
+
         try {
             if (!jwtUtils.isTokenValid(jwt)) {
+                log.debug("JWT token is invalid");
                 filterChain.doFilter(request, response);
                 return;
             }
 
             String email = jwtUtils.extractEmail(jwt);
+            log.debug("Email extracted from token: {}", email);
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                log.debug("User loaded: {}, authorities: {}", userDetails.getUsername(), userDetails.getAuthorities());
 
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
@@ -57,6 +64,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     );
 
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                    log.debug("Authentication set in SecurityContext");
             }
         } catch (Exception ex) {
             log.warn("JWT authentication failed: {}", ex.getMessage());
