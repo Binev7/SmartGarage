@@ -1,7 +1,7 @@
-package com.portfolio.smartgarage.service;
+package com.portfolio.smartgarage.service.interfaces;
 
-import com.portfolio.smartgarage.dto.ServiceRequestDto;
-import com.portfolio.smartgarage.dto.ServiceResponseDto;
+import com.portfolio.smartgarage.dto.service.ServiceRequestDto;
+import com.portfolio.smartgarage.dto.service.ServiceResponseDto;
 
 import java.util.List;
 
@@ -15,4 +15,3 @@ public interface ServiceService {
 
     void deleteService(Long serviceId);
 }
-

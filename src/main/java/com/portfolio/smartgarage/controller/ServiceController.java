@@ -1,8 +1,8 @@
 package com.portfolio.smartgarage.controller;
 
-import com.portfolio.smartgarage.dto.ServiceRequestDto;
-import com.portfolio.smartgarage.dto.ServiceResponseDto;
-import com.portfolio.smartgarage.service.ServiceService;
+import com.portfolio.smartgarage.dto.service.ServiceRequestDto;
+import com.portfolio.smartgarage.dto.service.ServiceResponseDto;
+import com.portfolio.smartgarage.service.interfaces.ServiceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -42,4 +42,3 @@ public class ServiceController {
         return ResponseEntity.noContent().build();
     }
 }
-

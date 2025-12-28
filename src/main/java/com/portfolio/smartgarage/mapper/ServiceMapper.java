@@ -1,7 +1,7 @@
 package com.portfolio.smartgarage.mapper;
 
-import com.portfolio.smartgarage.dto.ServiceRequestDto;
-import com.portfolio.smartgarage.dto.ServiceResponseDto;
+import com.portfolio.smartgarage.dto.service.ServiceRequestDto;
+import com.portfolio.smartgarage.dto.service.ServiceResponseDto;
 import com.portfolio.smartgarage.model.Service;
 import org.springframework.stereotype.Component;
 
@@ -23,4 +23,3 @@ public class ServiceMapper {
                 .build();
     }
 }
-
