@@ -9,6 +9,8 @@ public interface ServiceService {
 
     ServiceResponseDto createService(ServiceRequestDto dto);
 
+    ServiceResponseDto updateService(Long id, ServiceRequestDto dto);
+
     ServiceResponseDto getServiceById(Long serviceId);
 
     List<ServiceResponseDto> getAllServices();
