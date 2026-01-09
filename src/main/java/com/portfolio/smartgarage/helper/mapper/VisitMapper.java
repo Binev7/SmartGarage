@@ -1,7 +1,8 @@
-package com.portfolio.smartgarage.mapper;
+package com.portfolio.smartgarage.helper.mapper;
 
 import com.portfolio.smartgarage.dto.visit.CreateVisitDto;
 import com.portfolio.smartgarage.dto.service.ServiceSummaryDto;
+import com.portfolio.smartgarage.dto.visit.NewCustomerVisitDto;
 import com.portfolio.smartgarage.dto.visit.VisitViewDto;
 import com.portfolio.smartgarage.model.Service;
 import com.portfolio.smartgarage.model.Visit;
@@ -13,6 +14,13 @@ import java.util.stream.Collectors;
 public class VisitMapper {
 
     public Visit toEntity(CreateVisitDto dto) {
+        return Visit.builder()
+                .date(dto.getDate())
+                .additionalComments(dto.getAdditionalComments())
+                .build();
+    }
+
+    public Visit toEntity(NewCustomerVisitDto dto) {
         return Visit.builder()
                 .date(dto.getDate())
                 .additionalComments(dto.getAdditionalComments())
@@ -36,10 +44,13 @@ public class VisitMapper {
                 .vehicleModel(visit.getVehicle().getModel())
                 .vehicleYear(visit.getVehicle().getYear())
                 .vehicleLicensePlate(visit.getVehicle().getLicensePlate())
+
                 .totalPrice(visit.getTotalPrice());
 
         if (visit.getServices() != null && !visit.getServices().isEmpty()) {
-            builder.services(visit.getServices().stream().map(this::serviceToSummary).collect(Collectors.toList()));
+            builder.services(visit.getServices().stream()
+                    .map(this::serviceToSummary)
+                    .collect(Collectors.toList()));
         }
 
         return builder.build();
