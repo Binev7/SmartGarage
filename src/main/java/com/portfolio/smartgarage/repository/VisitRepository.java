@@ -16,11 +16,7 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
 
     List<Visit> findAllByUserId(Long userId);
 
-    List<Visit> findAllByVehicleId(Long vehicleId);
-
     List<Visit> findAllByUserIdAndVehicleId(Long userId, Long vehicleId);
-
-    boolean existsByVehicleId(Long vehicleId);
 
     @Modifying
     @Transactional
