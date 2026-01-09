@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public interface ServiceRepository extends JpaRepository<Service, Long> {
 
+    List<Service> findAllByOrderByNameAsc();
+
     List<Service> findByNameContainingIgnoreCase(String name);
 
     List<Service> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
