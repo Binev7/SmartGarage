@@ -14,8 +14,5 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long>, JpaSpec
 
     Optional<Vehicle> findByVin(String vin);
 
-    List<Vehicle> findAllByOwnerPhoneNumber(String phoneNumber);
-
-    List<Vehicle> findAllByBrandContainingIgnoreCaseAndModelContainingIgnoreCaseAndYear(
-            String brand, String model, int year);
+    List<Vehicle> findAllByOwnerId(Long ownerId);
 }

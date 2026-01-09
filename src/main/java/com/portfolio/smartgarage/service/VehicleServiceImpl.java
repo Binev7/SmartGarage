@@ -5,7 +5,7 @@ import com.portfolio.smartgarage.dto.vehicle.VehicleResponseDto;
 import com.portfolio.smartgarage.dto.vehicle.VehicleSearchDto;
 import com.portfolio.smartgarage.exception.ResourceAlreadyExistsException;
 import com.portfolio.smartgarage.exception.ResourceNotFoundException;
-import com.portfolio.smartgarage.mapper.VehicleMapper;
+import com.portfolio.smartgarage.helper.mapper.VehicleMapper;
 import com.portfolio.smartgarage.model.User;
 import com.portfolio.smartgarage.model.Vehicle;
 import com.portfolio.smartgarage.repository.UserRepository;
@@ -101,20 +101,13 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public List<VehicleResponseDto> getAllVehiclesByOwner(Long userId) {
-        User owner = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User with id " + userId + " not found"));
-
-        List<Vehicle> vehicles = vehicleRepository.findAll();
-        List<VehicleResponseDto> result = vehicles.stream()
-                .filter(v -> v.getOwner() != null && v.getOwner().getId().equals(owner.getId()))
-                .map(vehicleMapper::toDto)
-                .collect(Collectors.toList());
-
-        if (result.isEmpty()) {
-            throw new ResourceNotFoundException("No vehicles found for user with id " + userId);
+        if (!userRepository.existsById(userId)) {
+            throw new ResourceNotFoundException("User with id " + userId + " not found");
         }
 
-        return result;
+        return vehicleRepository.findAllByOwnerId(userId).stream()
+                .map(vehicleMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
