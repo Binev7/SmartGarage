@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.mapper;
+package com.portfolio.smartgarage.helper.mapper;
 
 import com.portfolio.smartgarage.dto.vehicle.VehicleRequestDto;
 import com.portfolio.smartgarage.dto.vehicle.VehicleResponseDto;
