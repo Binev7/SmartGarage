@@ -25,6 +25,6 @@ public class NewCustomerVisitDto {
 
     private List<Long> serviceIds;
     @NotNull
-    private LocalDateTime visitDate;
+    private LocalDateTime date;
     private String additionalComments;
 }
