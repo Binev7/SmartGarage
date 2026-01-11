@@ -1,134 +1,210 @@
 package com.portfolio.smartgarage.service;
 
+import com.portfolio.smartgarage.dto.vehicle.VehicleRequestDto;
 import com.portfolio.smartgarage.dto.visit.CreateVisitDto;
+import com.portfolio.smartgarage.dto.visit.NewCustomerVisitDto;
 import com.portfolio.smartgarage.dto.visit.VisitViewDto;
-import com.portfolio.smartgarage.exception.ResourceNotFoundException;
 import com.portfolio.smartgarage.exception.InvalidDataException;
-import com.portfolio.smartgarage.mapper.VisitMapper;
-import com.portfolio.smartgarage.model.Service;
-import com.portfolio.smartgarage.model.User;
-import com.portfolio.smartgarage.model.Vehicle;
-import com.portfolio.smartgarage.model.Visit;
-import com.portfolio.smartgarage.model.VisitStatus;
-import com.portfolio.smartgarage.repository.ServiceRepository;
-import com.portfolio.smartgarage.repository.UserRepository;
-import com.portfolio.smartgarage.repository.VehicleRepository;
-import com.portfolio.smartgarage.repository.VisitRepository;
+import com.portfolio.smartgarage.exception.ResourceNotFoundException;
+import com.portfolio.smartgarage.helper.validator.VisitValidator;
+import com.portfolio.smartgarage.helper.mapper.VehicleMapper;
+import com.portfolio.smartgarage.helper.mapper.VisitMapper;
+import com.portfolio.smartgarage.model.*;
+import com.portfolio.smartgarage.repository.*;
+import com.portfolio.smartgarage.service.interfaces.CurrencyService;
 import com.portfolio.smartgarage.service.interfaces.VisitService;
+import com.portfolio.smartgarage.util.PasswordGenerator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-@org.springframework.stereotype.Service
+@Service
 @RequiredArgsConstructor
 public class VisitServiceImpl implements VisitService {
+
+    private static final int MAX_DAILY_VISITS = 6;
+    private static final int CALENDAR_DAYS_HORIZON = 14;
+    private static final String BASE_CURRENCY = "BGN";
 
     private final VisitRepository visitRepository;
     private final UserRepository userRepository;
     private final VehicleRepository vehicleRepository;
     private final ServiceRepository serviceRepository;
+    private final CurrencyService currencyService;
+    private final VisitValidator visitValidator;
     private final VisitMapper visitMapper;
+    private final VehicleMapper vehicleMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public VisitViewDto createVisit(CreateVisitDto dto) {
+        visitValidator.validateDailyLimit(dto.getDate().toLocalDate(), MAX_DAILY_VISITS);
+
         User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User with id " + dto.getUserId() + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with ID: " + dto.getUserId()));
 
         Vehicle vehicle = vehicleRepository.findById(dto.getVehicleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Vehicle with id " + dto.getVehicleId() + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with ID: " + dto.getVehicleId()));
+
+        visitValidator.validateVehicleOwnership(user, vehicle);
 
         Visit visit = visitMapper.toEntity(dto);
         visit.setUser(user);
         visit.setVehicle(vehicle);
         visit.setStatus(VisitStatus.PENDING);
 
-        // Attach services if provided
-        if (dto.getServiceIds() != null && !dto.getServiceIds().isEmpty()) {
-            List<Service> services = serviceRepository.findAllById(dto.getServiceIds());
-            if (services.size() != dto.getServiceIds().size()) {
-                // Some service IDs not found
-                List<Long> foundIds = services.stream().map(Service::getId).collect(Collectors.toList());
-                List<Long> missing = dto.getServiceIds().stream().filter(id -> !foundIds.contains(id)).collect(Collectors.toList());
-                throw new ResourceNotFoundException("Services not found for ids: " + missing);
-            }
-            visit.setServices(services);
-
-            // compute total price
-            BigDecimal total = services.stream()
-                    .map(Service::getPrice)
-                    .filter(p -> p != null)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            visit.setTotalPrice(total);
-        }
+        applyServicesAndCalculateTotal(visit, dto.getServiceIds());
 
         Visit savedVisit = visitRepository.save(visit);
         return visitMapper.toDto(savedVisit);
     }
 
     @Override
-    public List<VisitViewDto> getVisitsByUser(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new ResourceNotFoundException("User with id " + userId + " not found");
-        }
+    @Transactional
+    public VisitViewDto registerVisitForNewCustomer(NewCustomerVisitDto dto) {
+        visitValidator.validateDailyLimit(dto.getDate().toLocalDate(), MAX_DAILY_VISITS);
+        visitValidator.validateNewCustomerUniqueness(dto);
 
-        List<VisitViewDto> result = visitRepository.findAllByUserId(userId)
-                .stream()
-                .map(visitMapper::toDto)
-                .collect(Collectors.toList());
+        String rawPassword = PasswordGenerator.generate();
+        User newUser = User.builder()
+                .username(dto.getUsername())
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(rawPassword))
+                .phoneNumber(dto.getPhoneNumber())
+                .role(Role.CUSTOMER)
+                .build();
+        User savedUser = userRepository.save(newUser);
 
-        if (result.isEmpty()) {
-            throw new ResourceNotFoundException("No visits found for user with id " + userId);
-        }
+        VehicleRequestDto vehicleReq = new VehicleRequestDto(
+                dto.getLicensePlate(), dto.getVin(), dto.getYear(), dto.getModel(), dto.getBrand()
+        );
+        Vehicle vehicle = vehicleMapper.toEntity(vehicleReq);
+        vehicle.setOwner(savedUser);
+        Vehicle savedVehicle = vehicleRepository.save(vehicle);
 
-        return result;
+        Visit visit = visitMapper.toEntity(dto);
+        visit.setUser(savedUser);
+        visit.setVehicle(savedVehicle);
+        visit.setStatus(VisitStatus.PENDING);
+
+        applyServicesAndCalculateTotal(visit, dto.getServiceIds());
+
+        Visit savedVisit = visitRepository.save(visit);
+
+        VisitViewDto response = visitMapper.toDto(savedVisit);
+
+        String passComment = "TEMP_PASS: " + rawPassword;
+        response.setAdditionalComments(response.getAdditionalComments() == null
+                ? passComment
+                : response.getAdditionalComments() + " " + passComment);
+
+        return response;
     }
 
     @Override
-    public List<VisitViewDto> getVisitsByVehicle(Long vehicleId) {
-        if (!vehicleRepository.existsById(vehicleId)) {
-            throw new ResourceNotFoundException("Vehicle with id " + vehicleId + " not found");
+    public List<VisitViewDto> getVisitsByUser(Long userId, Long vehicleId) {
+        if (!userRepository.existsById(userId)) {
+            throw new ResourceNotFoundException("User not found.");
         }
 
-        List<VisitViewDto> result = visitRepository.findAllByVehicleId(vehicleId)
-                .stream()
+        List<Visit> visits = (vehicleId != null)
+                ? visitRepository.findAllByUserIdAndVehicleId(userId, vehicleId)
+                : visitRepository.findAllByUserId(userId);
+
+        return visits.stream()
                 .map(visitMapper::toDto)
                 .collect(Collectors.toList());
+    }
 
-        if (result.isEmpty()) {
-            throw new ResourceNotFoundException("No visits found for vehicle with id " + vehicleId);
+    @Override
+    public VisitViewDto getVisitDetails(Long visitId, String currency) {
+        Visit visit = visitRepository.findById(visitId)
+                .orElseThrow(() -> new ResourceNotFoundException("Visit record not found."));
+
+        return convertAndMapVisit(visit, currency);
+    }
+
+    @Override
+    public VisitViewDto getVisitDetailsForCustomer(Long visitId, Long userId, String currency) {
+        Visit visit = visitRepository.findById(visitId)
+                .orElseThrow(() -> new ResourceNotFoundException("Visit record not found."));
+
+        if (!visit.getUser().getId().equals(userId)) {
+            throw new InvalidDataException("Access denied. This visit record does not belong to you.");
         }
 
-        return result;
+        return convertAndMapVisit(visit, currency);
+    }
+
+    @Override
+    public long getVisitCountByDate(LocalDate date) {
+        return visitRepository.countByDate(date);
+    }
+
+    @Override
+    public Map<LocalDate, String> getAvailabilityPlan(LocalDate startDate) {
+        Map<LocalDate, String> calendar = new LinkedHashMap<>();
+
+        for (int i = 0; i < CALENDAR_DAYS_HORIZON; i++) {
+            LocalDate date = startDate.plusDays(i);
+            long count = visitRepository.countByDate(date);
+
+            String status = (count >= MAX_DAILY_VISITS)
+                    ? "FULL - No slots available"
+                    : "AVAILABLE - " + (MAX_DAILY_VISITS - count) + " slots left";
+
+            calendar.put(date, status);
+        }
+        return calendar;
     }
 
     @Override
     @Transactional
     public void deleteVisit(Long visitId) {
-        Visit visit = visitRepository.findById(visitId)
-                .orElseThrow(() -> new ResourceNotFoundException("Visit with id " + visitId + " not found"));
+        if (!visitRepository.existsById(visitId)) {
+            throw new ResourceNotFoundException("Visit not found.");
+        }
+        visitRepository.deleteById(visitId);
+    }
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new InvalidDataException("Unauthorized");
+    private void applyServicesAndCalculateTotal(Visit visit, List<Long> serviceIds) {
+        if (serviceIds == null || serviceIds.isEmpty()) {
+            visit.setTotalPrice(BigDecimal.ZERO);
+            return;
         }
 
-        String principal = auth.getName();
-        User currentUser = userRepository.findByEmail(principal)
-                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
-
-        boolean isOwner = visit.getUser().getId().equals(currentUser.getId());
-        boolean isEmployee = currentUser.getRole() != null && currentUser.getRole().name().equals("EMPLOYEE");
-
-        if (!isOwner && !isEmployee) {
-            throw new InvalidDataException("You are not allowed to delete this visit");
+        List<com.portfolio.smartgarage.model.Service> services = serviceRepository.findAllById(serviceIds);
+        if (services.size() != serviceIds.size()) {
+            throw new ResourceNotFoundException("One or more service IDs are invalid.");
         }
 
-        visitRepository.delete(visit);
+        visit.setServices(services);
+        BigDecimal total = services.stream()
+                .map(com.portfolio.smartgarage.model.Service::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        visit.setTotalPrice(total);
+    }
+
+    private VisitViewDto convertAndMapVisit(Visit visit, String targetCurrency) {
+        VisitViewDto dto = visitMapper.toDto(visit);
+
+        if (targetCurrency != null && !targetCurrency.isBlank() && !targetCurrency.equalsIgnoreCase(BASE_CURRENCY)) {
+            BigDecimal convertedTotal = currencyService.convert(visit.getTotalPrice(), BASE_CURRENCY, targetCurrency);
+            dto.setTotalPrice(convertedTotal);
+            dto.setCurrency(targetCurrency.toUpperCase());
+        } else {
+            dto.setCurrency(BASE_CURRENCY);
+        }
+
+        return dto;
     }
 }

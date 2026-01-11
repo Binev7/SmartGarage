@@ -4,7 +4,7 @@ import com.portfolio.smartgarage.dto.service.ServiceRequestDto;
 import com.portfolio.smartgarage.dto.service.ServiceResponseDto;
 import com.portfolio.smartgarage.exception.ResourceAlreadyExistsException;
 import com.portfolio.smartgarage.exception.ResourceNotFoundException;
-import com.portfolio.smartgarage.mapper.ServiceMapper;
+import com.portfolio.smartgarage.helper.mapper.ServiceMapper;
 import com.portfolio.smartgarage.model.Service;
 import com.portfolio.smartgarage.repository.ServiceRepository;
 import com.portfolio.smartgarage.repository.VisitRepository;
@@ -36,6 +36,23 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
+    @Transactional
+    public ServiceResponseDto updateService(Long id, ServiceRequestDto dto) {
+        Service existing = serviceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Service with id " + id + " not found"));
+
+        if (!existing.getName().equalsIgnoreCase(dto.getName()) &&
+            serviceRepository.existsByNameIgnoreCase(dto.getName())) {
+            throw new ResourceAlreadyExistsException("Service with name " + dto.getName() + " already exists");
+        }
+        existing.setName(dto.getName());
+        existing.setPrice(dto.getPrice());
+        Service updated = serviceRepository.save(existing);
+        return serviceMapper.toDto(updated);
+    }
+
+
+    @Override
     public ServiceResponseDto getServiceById(Long serviceId) {
         Service s = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Service with id " + serviceId + " not found"));
@@ -44,7 +61,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public List<ServiceResponseDto> getAllServices() {
-        List<ServiceResponseDto> list = serviceRepository.findAll().stream()
+        List<ServiceResponseDto> list = serviceRepository.findAllByOrderByNameAsc().stream()
                 .map(serviceMapper::toDto)
                 .collect(Collectors.toList());
 
@@ -61,7 +78,6 @@ public class ServiceServiceImpl implements ServiceService {
         Service s = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Service with id " + serviceId + " not found"));
 
-        // delete visit-service join rows first to avoid FK constraint issues
         visitRepository.deleteAllByServiceId(serviceId);
 
         serviceRepository.delete(s);

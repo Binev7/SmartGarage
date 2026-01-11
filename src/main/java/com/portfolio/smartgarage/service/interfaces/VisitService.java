@@ -1,17 +1,28 @@
 package com.portfolio.smartgarage.service.interfaces;
 
 import com.portfolio.smartgarage.dto.visit.CreateVisitDto;
+import com.portfolio.smartgarage.dto.visit.NewCustomerVisitDto;
 import com.portfolio.smartgarage.dto.visit.VisitViewDto;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public interface VisitService {
 
     VisitViewDto createVisit(CreateVisitDto dto);
 
-    List<VisitViewDto> getVisitsByUser(Long userId);
+    public List<VisitViewDto> getVisitsByUser(Long userId, Long vehicleId);
 
-    List<VisitViewDto> getVisitsByVehicle(Long vehicleId);
+    public VisitViewDto getVisitDetails(Long visitId, String currency);
+
+    public VisitViewDto getVisitDetailsForCustomer(Long visitId, Long userId, String currency);
+
+    VisitViewDto registerVisitForNewCustomer(NewCustomerVisitDto dto);
+
+    long getVisitCountByDate(LocalDate date);
+
+    Map<LocalDate, String> getAvailabilityPlan(LocalDate startDate);
 
     void deleteVisit(Long visitId);
 }

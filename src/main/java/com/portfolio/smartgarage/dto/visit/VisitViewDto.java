@@ -38,4 +38,7 @@ public class VisitViewDto {
 
     private List<ServiceSummaryDto> services;
     private BigDecimal totalPrice;
+
+    @Builder.Default
+    private String currency = "BGN";
 }

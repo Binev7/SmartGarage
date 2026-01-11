@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -15,9 +16,7 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
 
     List<Visit> findAllByUserId(Long userId);
 
-    List<Visit> findAllByVehicleId(Long vehicleId);
-
-    boolean existsByVehicleId(Long vehicleId);
+    List<Visit> findAllByUserIdAndVehicleId(Long userId, Long vehicleId);
 
     @Modifying
     @Transactional
@@ -28,4 +27,7 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
     @Transactional
     @Query(value = "DELETE FROM visit_services WHERE service_id = :serviceId", nativeQuery = true)
     void deleteAllByServiceId(@Param("serviceId") Long serviceId);
+
+    @Query("SELECT COUNT(v) FROM Visit v WHERE CAST(v.date AS date) = :date")
+    long countByDate(@Param("date") LocalDate date);
 }
