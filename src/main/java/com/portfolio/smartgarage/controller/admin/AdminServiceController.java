@@ -27,7 +27,7 @@ public class AdminServiceController {
         return ResponseEntity.ok(serviceService.updateService(id, dto));
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete (@PathVariable Long id) {
         serviceService.deleteService(id);
         return ResponseEntity.noContent().build();
