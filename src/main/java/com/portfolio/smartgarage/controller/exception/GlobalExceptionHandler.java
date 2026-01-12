@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.controller;
+package com.portfolio.smartgarage.controller.exception;
 
 
 import com.portfolio.smartgarage.dto.error.ErrorResponseDto;
