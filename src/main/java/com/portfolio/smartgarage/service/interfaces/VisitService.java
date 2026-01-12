@@ -22,7 +22,7 @@ public interface VisitService {
 
     long getVisitCountByDate(LocalDate date);
 
-    Map<LocalDate, String> getAvailabilityPlan(LocalDate startDate);
+    Map<LocalDate, String> getCalendarAvailability(LocalDate startDate);
 
     void deleteVisit(Long visitId);
 }

@@ -151,7 +151,7 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public Map<LocalDate, String> getAvailabilityPlan(LocalDate startDate) {
+    public Map<LocalDate, String> getCalendarAvailability(LocalDate startDate) {
         Map<LocalDate, String> calendar = new LinkedHashMap<>();
 
         for (int i = 0; i < CALENDAR_DAYS_HORIZON; i++) {

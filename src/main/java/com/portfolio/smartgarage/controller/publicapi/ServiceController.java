@@ -1,19 +1,19 @@
-package com.portfolio.smartgarage.controller.customer;
+package com.portfolio.smartgarage.controller.publicapi;
 
 import com.portfolio.smartgarage.dto.service.ServiceResponseDto;
+import com.portfolio.smartgarage.security.annotation.IsEmployeeOrCustomer;
 import com.portfolio.smartgarage.service.interfaces.ServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/customer/services")
-@PreAuthorize("hasRole('CUSTOMER')")
+@RequestMapping("/services")
+@IsEmployeeOrCustomer
 @RequiredArgsConstructor
-public class CustomerServiceController {
+public class ServiceController {
 
     private final ServiceService serviceService;
 
