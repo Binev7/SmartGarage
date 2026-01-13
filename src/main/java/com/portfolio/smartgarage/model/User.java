@@ -17,6 +17,14 @@ public class User {
     private Long id;
 
     @NotBlank
+    @Column(nullable = false)
+    private String firstName;
+
+    @NotBlank
+    @Column(nullable = false)
+    private String lastName;
+
+    @NotBlank
     @Size(min = 2, max = 20)
     @Column(unique = true, nullable = false)
     private String username;

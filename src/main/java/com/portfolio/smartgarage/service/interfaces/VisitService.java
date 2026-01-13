@@ -16,8 +16,6 @@ public interface VisitService {
 
     public VisitViewDto getVisitDetails(Long visitId, String currency);
 
-    public VisitViewDto getVisitDetailsForCustomer(Long visitId, Long userId, String currency);
-
     VisitViewDto registerVisitForNewCustomer(NewCustomerVisitDto dto);
 
     long getVisitCountByDate(LocalDate date);

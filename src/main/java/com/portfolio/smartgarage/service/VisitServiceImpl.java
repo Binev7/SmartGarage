@@ -47,18 +47,16 @@ public class VisitServiceImpl implements VisitService {
     @Override
     @Transactional
     public VisitViewDto createVisit(CreateVisitDto dto) {
-        visitValidator.validateDailyLimit(dto.getDate().toLocalDate(), MAX_DAILY_VISITS);
 
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with ID: " + dto.getUserId()));
+        visitValidator.validateDailyLimit(dto.getDate().toLocalDate(), MAX_DAILY_VISITS);
 
         Vehicle vehicle = vehicleRepository.findById(dto.getVehicleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with ID: " + dto.getVehicleId()));
 
-        visitValidator.validateVehicleOwnership(user, vehicle);
+        User owner = vehicle.getOwner();
 
         Visit visit = visitMapper.toEntity(dto);
-        visit.setUser(user);
+        visit.setUser(owner);
         visit.setVehicle(vehicle);
         visit.setStatus(VisitStatus.PENDING);
 
@@ -76,6 +74,8 @@ public class VisitServiceImpl implements VisitService {
 
         String rawPassword = PasswordGenerator.generate();
         User newUser = User.builder()
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName())
                 .username(dto.getUsername())
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(rawPassword))
@@ -129,18 +129,6 @@ public class VisitServiceImpl implements VisitService {
     public VisitViewDto getVisitDetails(Long visitId, String currency) {
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new ResourceNotFoundException("Visit record not found."));
-
-        return convertAndMapVisit(visit, currency);
-    }
-
-    @Override
-    public VisitViewDto getVisitDetailsForCustomer(Long visitId, Long userId, String currency) {
-        Visit visit = visitRepository.findById(visitId)
-                .orElseThrow(() -> new ResourceNotFoundException("Visit record not found."));
-
-        if (!visit.getUser().getId().equals(userId)) {
-            throw new InvalidDataException("Access denied. This visit record does not belong to you.");
-        }
 
         return convertAndMapVisit(visit, currency);
     }
