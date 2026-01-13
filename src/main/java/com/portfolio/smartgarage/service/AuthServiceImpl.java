@@ -1,8 +1,10 @@
 package com.portfolio.smartgarage.service;
 
+import com.portfolio.smartgarage.dto.auth.AuthResponseDto;
 import com.portfolio.smartgarage.dto.auth.LoginRequestDto;
 import com.portfolio.smartgarage.dto.auth.RegisterRequestDto;
 import com.portfolio.smartgarage.exception.ResourceAlreadyExistsException;
+import com.portfolio.smartgarage.exception.ResourceNotFoundException;
 import com.portfolio.smartgarage.helper.mapper.UserMapper;
 import com.portfolio.smartgarage.model.Role;
 import com.portfolio.smartgarage.model.User;
@@ -39,16 +41,18 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String login(LoginRequestDto request) {
+    public AuthResponseDto login(LoginRequestDto request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + request.getEmail()));
 
-        Authentication authentication =
-                authenticationManager.authenticate(
-                        new UsernamePasswordAuthenticationToken(
-                                request.getEmail(),
-                                request.getPassword()
-                        )
-                );
+        String token = jwtUtils.generateToken(user.getEmail());
 
-        return jwtUtils.generateToken(authentication.getName());
+        return userMapper.toAuthResponse(user, token);
     }
 }

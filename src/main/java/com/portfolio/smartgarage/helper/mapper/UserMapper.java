@@ -9,11 +9,10 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
     public User toEntity(RegisterRequestDto request) {
-        if (request == null) {
-            return null;
-        }
 
         User user = new User();
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPhoneNumber(request.getPhoneNumber());
@@ -22,13 +21,12 @@ public class UserMapper {
     }
 
     public AuthResponseDto toAuthResponse(User user, String token) {
-        if (user == null) {
-            return null;
-        }
 
         return AuthResponseDto.builder()
                 .token(token)
                 .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .role(user.getRole().name())
