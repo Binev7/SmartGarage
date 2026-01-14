@@ -17,6 +17,8 @@ public class NewCustomerVisitDto {
     @NotBlank private String lastName;
     @NotBlank private String phoneNumber;
 
+    @NotNull(message = "Please select a vehicle from the catalog")
+    private Long catalogVehicleId;
     @NotBlank private String brand;
     @NotBlank private String model;
     private int year;
