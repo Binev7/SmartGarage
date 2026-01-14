@@ -1,22 +1,19 @@
 package com.portfolio.smartgarage.service;
 
-import com.portfolio.smartgarage.dto.vehicle.VehicleRequestDto;
-import com.portfolio.smartgarage.dto.vehicle.VehicleResponseDto;
-import com.portfolio.smartgarage.dto.vehicle.VehicleSearchDto;
+import com.portfolio.smartgarage.dto.vehicle.*;
 import com.portfolio.smartgarage.exception.ResourceAlreadyExistsException;
 import com.portfolio.smartgarage.exception.ResourceNotFoundException;
+import com.portfolio.smartgarage.helper.mapper.BrandMapper;
+import com.portfolio.smartgarage.helper.mapper.ModelMapper;
 import com.portfolio.smartgarage.helper.mapper.VehicleMapper;
-import com.portfolio.smartgarage.model.User;
+import com.portfolio.smartgarage.model.Brand;
+import com.portfolio.smartgarage.model.Model;
 import com.portfolio.smartgarage.model.Vehicle;
-import com.portfolio.smartgarage.repository.UserRepository;
+import com.portfolio.smartgarage.repository.BrandRepository;
+import com.portfolio.smartgarage.repository.ModelRepository;
 import com.portfolio.smartgarage.repository.VehicleRepository;
-import com.portfolio.smartgarage.repository.VisitRepository;
-import com.portfolio.smartgarage.repository.specifications.VehicleSpecifications;
 import com.portfolio.smartgarage.service.interfaces.VehicleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,97 +24,112 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class VehicleServiceImpl implements VehicleService {
 
+    private final BrandRepository brandRepository;
+    private final ModelRepository modelRepository;
     private final VehicleRepository vehicleRepository;
-    private final UserRepository userRepository;
     private final VehicleMapper vehicleMapper;
-    private final VisitRepository visitRepository;
+    private final BrandMapper brandMapper;
+    private final ModelMapper modelMapper;
 
 
     @Override
-    public Page<VehicleResponseDto> searchVehicles(VehicleSearchDto criteria, Pageable pageable) {
-        Specification<Vehicle> spec = Specification
-                .where(VehicleSpecifications.hasBrand(criteria.getBrand()))
-                .and(VehicleSpecifications.hasModel(criteria.getModel()))
-                .and(VehicleSpecifications.hasYear(criteria.getYear()))
-                .and(VehicleSpecifications.hasLicensePlate(criteria.getLicensePlate()))
-                .and(VehicleSpecifications.hasOwnerName(criteria.getOwnerName()));
-
-        Page<Vehicle> vehiclePage = vehicleRepository.findAll(spec, pageable);
-
-        return vehiclePage.map(vehicleMapper::toDto);
+    public List<BrandResponseDto> getAllBrands() {
+        return brandRepository.findAllByActiveTrue().stream()
+                .map(brandMapper::toResponseDto)
+                .collect(Collectors.toList());
     }
 
-    @Override
-    @Transactional
-    public VehicleResponseDto createVehicle(VehicleRequestDto request, Long userId) {
-        vehicleRepository.findByLicensePlate(request.getLicensePlate()).ifPresent(v -> {
-            throw new ResourceAlreadyExistsException("Vehicle with license plate " + request.getLicensePlate() + " already exists");
-        });
-
-        vehicleRepository.findByVin(request.getVin()).ifPresent(v -> {
-            throw new ResourceAlreadyExistsException("Vehicle with VIN " + request.getVin() + " already exists");
-        });
-
-        User owner = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User with id " + userId + " not found"));
-
-        Vehicle vehicle = vehicleMapper.toEntity(request);
-        vehicle.setOwner(owner);
-
-        Vehicle saved = vehicleRepository.save(vehicle);
-        return vehicleMapper.toDto(saved);
+    public List<ModelResponseDto> getModelsByBrand(Long brandId) {
+        return modelRepository.findAllByBrandIdAndActiveTrue(brandId).stream()
+                .map(m -> new ModelResponseDto(m.getId(), m.getName()))
+                .collect(Collectors.toList());
     }
 
-    public VehicleResponseDto updateVehicle(Long vehicleId, VehicleRequestDto request) {
-        Vehicle existing = vehicleRepository.findById(vehicleId)
-                .orElseThrow(() -> new ResourceNotFoundException("Vehicle with id " + vehicleId + " not found"));
-        if (!existing.getLicensePlate().equalsIgnoreCase(request.getLicensePlate())) {
-            vehicleRepository.findByLicensePlate(request.getLicensePlate()).ifPresent(v -> {
-                throw new ResourceAlreadyExistsException("Vehicle with license plate " + request.getLicensePlate() + " already exists");
-            });
-        }
-        if (!existing.getVin().equalsIgnoreCase(request.getVin())) {
-            vehicleRepository.findByVin(request.getVin()).ifPresent(v -> {
-                throw new ResourceAlreadyExistsException("Vehicle with VIN " + request.getVin() + " already exists");
-            });
-        }
-
-        existing.setBrand(request.getBrand());
-        existing.setModel(request.getModel());
-        existing.setYear(request.getYear());
-        existing.setLicensePlate(request.getLicensePlate());
-        existing.setVin(request.getVin());
-
-        Vehicle updated = vehicleRepository.save(existing);
-        return vehicleMapper.toDto(updated);
-    }
-
-    @Override
-    public VehicleResponseDto getVehicleById(Long vehicleId) {
-        Vehicle v = vehicleRepository.findById(vehicleId)
-                .orElseThrow(() -> new ResourceNotFoundException("Vehicle with id " + vehicleId + " not found"));
-        return vehicleMapper.toDto(v);
-    }
-
-    @Override
-    public List<VehicleResponseDto> getAllVehiclesByOwner(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new ResourceNotFoundException("User with id " + userId + " not found");
-        }
-
-        return vehicleRepository.findAllByOwnerId(userId).stream()
-                .map(vehicleMapper::toDto)
+    public List<Integer> getAvailableYearsForModel(Long modelId) {
+        return vehicleRepository.findAllByModelId(modelId).stream()
+                .map(Vehicle::getYear)
+                .distinct()
+                .sorted((a, b) -> b - a)
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public void deleteVehicle(Long vehicleId) {
-        Vehicle v = vehicleRepository.findById(vehicleId)
-                .orElseThrow(() -> new ResourceNotFoundException("Vehicle with id " + vehicleId + " not found"));
+    public BrandResponseDto createBrand(BrandRequestDto dto) {
+        brandRepository.findByNameIgnoreCase(dto.getName()).ifPresent(b -> {
+            throw new ResourceAlreadyExistsException("Brand already exists");
+        });
 
-        visitRepository.deleteAllByVehicleId(vehicleId);
+        Brand brand = brandMapper.toEntity(dto);
+        Brand saved = brandRepository.save(brand);
+        return brandMapper.toResponseDto(saved);
+    }
 
-        vehicleRepository.delete(v);
+    @Override
+    @Transactional
+    public ModelResponseDto createModel(ModelRequestDto dto) {
+        Brand brand = brandRepository.findById(dto.getBrandId())
+                .orElseThrow(() -> new ResourceNotFoundException("Brand not found"));
+
+        if (modelRepository.existsByNameAndBrandId(dto.getName(), brand.getId())) {
+            throw new ResourceAlreadyExistsException("Model already exists");
+        }
+
+        Model model = modelMapper.toEntity(dto, brand);
+        Model saved = modelRepository.save(model);
+        return modelMapper.toResponseDto(saved);
+    }
+
+    @Override
+    @Transactional
+    public void addVehicleToCatalog(VehicleCatalogDto dto) {
+
+        Model model = modelRepository.findById(dto.getModelId())
+                .orElseThrow(() -> new ResourceNotFoundException("Model not found"));
+
+        if (vehicleRepository.existsByModelIdAndYear(dto.getModelId(), dto.getYear())) {
+            throw new ResourceAlreadyExistsException("This model year already exists in catalog");
+        }
+
+        Vehicle vehicle = Vehicle.builder()
+                .model(model)
+                .year(dto.getYear())
+                .build();
+
+        vehicleRepository.save(vehicle);
+    }
+
+    @Override
+    @Transactional
+    public void archiveVehicleFromCatalog(Long id) {
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Catalog entry not found"));
+
+        vehicle.setActive(false);
+        vehicleRepository.save(vehicle);
+    }
+
+    @Override
+    @Transactional
+    public void archiveModel(Long id) {
+        Model model = modelRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Model not found"));
+
+        model.setActive(false);
+        modelRepository.save(model);
+
+        vehicleRepository.deactivateAllByModelId(id);
+    }
+
+    @Override
+    @Transactional
+    public void archiveBrand(Long id) {
+        Brand brand = brandRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Model not found"));
+
+        brand.setActive(false);
+        brandRepository.save(brand);
+
+        vehicleRepository.deactivateAllByModelId(id);
     }
 }

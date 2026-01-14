@@ -1,32 +1,17 @@
 package com.portfolio.smartgarage.helper.mapper;
 
-import com.portfolio.smartgarage.dto.vehicle.VehicleRequestDto;
-import com.portfolio.smartgarage.dto.vehicle.VehicleResponseDto;
+import com.portfolio.smartgarage.dto.vehicle.VehicleCatalogDto;
+import com.portfolio.smartgarage.model.Model;
 import com.portfolio.smartgarage.model.Vehicle;
 import org.springframework.stereotype.Component;
 
 @Component
 public class VehicleMapper {
 
-    public Vehicle toEntity(VehicleRequestDto dto) {
+    public Vehicle toEntity(VehicleCatalogDto dto, Model model) {
         return Vehicle.builder()
-                .licensePlate(dto.getLicensePlate())
-                .vin(dto.getVin())
+                .model(model)
                 .year(dto.getYear())
-                .model(dto.getModel())
-                .brand(dto.getBrand())
-                .build();
-    }
-
-    public VehicleResponseDto toDto(Vehicle v) {
-        return VehicleResponseDto.builder()
-                .id(v.getId())
-                .licensePlate(v.getLicensePlate())
-                .vin(v.getVin())
-                .year(v.getYear())
-                .model(v.getModel())
-                .brand(v.getBrand())
-                .ownerId(v.getOwner() != null ? v.getOwner().getId() : null)
                 .build();
     }
 }

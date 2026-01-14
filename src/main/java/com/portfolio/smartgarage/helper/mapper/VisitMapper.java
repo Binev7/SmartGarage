@@ -28,32 +28,24 @@ public class VisitMapper {
     }
 
     public VisitViewDto toDto(Visit visit) {
-        VisitViewDto.VisitViewDtoBuilder builder = VisitViewDto.builder()
+        return VisitViewDto.builder()
                 .id(visit.getId())
                 .date(visit.getDate())
-                .additionalComments(visit.getAdditionalComments())
                 .status(visit.getStatus())
+                .additionalComments(visit.getAdditionalComments())
+
+                .clientVehicleId(visit.getClientVehicle().getId())
+                .vehicleLicensePlate(visit.getClientVehicle().getLicensePlate())
+                .vehicleVin(visit.getClientVehicle().getVin())
+                .vehicleBrand(visit.getClientVehicle().getVehicle().getModel().getBrand().getName())
+                .vehicleModel(visit.getClientVehicle().getVehicle().getModel().getName())
+                .vehicleYear(visit.getClientVehicle().getVehicle().getYear())
 
                 .userId(visit.getUser().getId())
                 .username(visit.getUser().getUsername())
                 .userEmail(visit.getUser().getEmail())
-                .userPhoneNumber(visit.getUser().getPhoneNumber())
-
-                .vehicleId(visit.getVehicle().getId())
-                .vehicleBrand(visit.getVehicle().getBrand())
-                .vehicleModel(visit.getVehicle().getModel())
-                .vehicleYear(visit.getVehicle().getYear())
-                .vehicleLicensePlate(visit.getVehicle().getLicensePlate())
-
-                .totalPrice(visit.getTotalPrice());
-
-        if (visit.getServices() != null && !visit.getServices().isEmpty()) {
-            builder.services(visit.getServices().stream()
-                    .map(this::serviceToSummary)
-                    .collect(Collectors.toList()));
-        }
-
-        return builder.build();
+                .totalPrice(visit.getTotalPrice())
+                .build();
     }
 
     private ServiceSummaryDto serviceToSummary(Service s) {

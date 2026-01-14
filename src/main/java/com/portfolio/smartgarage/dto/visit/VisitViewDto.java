@@ -22,19 +22,17 @@ public class VisitViewDto {
     private String additionalComments;
     private VisitStatus status;
 
-
     private Long userId;
     private String username;
     private String userEmail;
     private String userPhoneNumber;
 
-
-    private Long vehicleId;
+    private Long clientVehicleId;
     private String vehicleBrand;
     private String vehicleModel;
     private int vehicleYear;
     private String vehicleLicensePlate;
-
+    private String vehicleVin; 
 
     private List<ServiceSummaryDto> services;
     private BigDecimal totalPrice;

@@ -1,25 +1,25 @@
 package com.portfolio.smartgarage.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "vehicles")
+@Table(name = "models")
 @Getter @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class Vehicle {
+public class Model {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "model_id", nullable = false)
-    private Model model;
-
     @Column(nullable = false)
-    private int year;
+    private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id", nullable = false)
+    private Brand brand;
 
     @Column(name = "is_active", nullable = false)
     private boolean active = true;

@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.controller.publicapi;
+package com.portfolio.smartgarage.controller.base;
 
 import com.portfolio.smartgarage.dto.service.ServiceResponseDto;
 import com.portfolio.smartgarage.security.annotation.IsEmployeeOrCustomer;
