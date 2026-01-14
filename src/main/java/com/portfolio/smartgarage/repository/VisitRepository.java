@@ -1,6 +1,7 @@
 package com.portfolio.smartgarage.repository;
 
 import com.portfolio.smartgarage.model.Visit;
+import com.portfolio.smartgarage.model.VisitStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,12 +17,14 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
 
     List<Visit> findAllByUserId(Long userId);
 
-    List<Visit> findAllByUserIdAndVehicleId(Long userId, Long vehicleId);
+    List<Visit> findAllByUserIdAndClientVehicleId(Long userId, Long clientVehicleId);
+
+    boolean existsByClientVehicleIdAndStatusIn(Long vehicleId, List<VisitStatus> statuses);
 
     @Modifying
     @Transactional
-    @Query("delete from Visit v where v.vehicle.id = :vehicleId")
-    void deleteAllByVehicleId(@Param("vehicleId") Long vehicleId);
+    @Query("delete from Visit v where v.clientVehicle.id = :clientVehicleId")
+    void deleteAllByClientVehicleId(@Param("clientVehicleId") Long clientVehicleId);
 
     @Modifying
     @Transactional

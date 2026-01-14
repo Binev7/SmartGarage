@@ -24,8 +24,8 @@ public class Visit {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vehicle_id", nullable = false)
-    private Vehicle vehicle;
+    @JoinColumn(name = "client_vehicle_id", nullable = false)
+    private ClientVehicle clientVehicle;
 
     @Column(nullable = false)
     private LocalDateTime date;
