@@ -3,16 +3,25 @@ package com.portfolio.smartgarage.repository;
 import com.portfolio.smartgarage.model.Vehicle;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Long>, JpaSpecificationExecutor<Vehicle> {
 
-    Optional<Vehicle> findByLicensePlate(String licensePlate);
+    List<Vehicle> findAllByModelId(Long modelId);
 
-    Optional<Vehicle> findByVin(String vin);
+    List<Vehicle> findAllByModelIdAndActiveTrue(Long modelId);
 
-    List<Vehicle> findAllByOwnerId(Long ownerId);
+    boolean existsByModelIdAndYear(Long modelId, int year);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Vehicle v SET v.active = false WHERE v.model.id = :modelId")
+    void deactivateAllByModelId(@Param("modelId") Long modelId);
 }

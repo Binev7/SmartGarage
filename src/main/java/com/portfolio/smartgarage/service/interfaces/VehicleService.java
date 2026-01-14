@@ -1,24 +1,28 @@
 package com.portfolio.smartgarage.service.interfaces;
 
-import com.portfolio.smartgarage.dto.vehicle.VehicleRequestDto;
-import com.portfolio.smartgarage.dto.vehicle.VehicleResponseDto;
-import com.portfolio.smartgarage.dto.vehicle.VehicleSearchDto;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.portfolio.smartgarage.dto.vehicle.*;
 
 import java.util.List;
 
 public interface VehicleService {
 
-    Page<VehicleResponseDto> searchVehicles(VehicleSearchDto criteria, Pageable pageable);
+    List<BrandResponseDto> getAllBrands();
 
-    VehicleResponseDto createVehicle(VehicleRequestDto request, Long userId);
+    List<ModelResponseDto> getModelsByBrand(Long brandId);
 
-    VehicleResponseDto updateVehicle(Long vehicleId, VehicleRequestDto request);
+    List<Integer> getAvailableYearsForModel(Long modelId);
 
-    VehicleResponseDto getVehicleById(Long vehicleId);
+    BrandResponseDto createBrand(BrandRequestDto dto);
 
-    List<VehicleResponseDto> getAllVehiclesByOwner(Long userId);
+    ModelResponseDto createModel(ModelRequestDto dto);
 
-    void deleteVehicle(Long vehicleId);
+    void addVehicleToCatalog(VehicleCatalogDto dto);
+
+    void archiveVehicleFromCatalog(Long id);
+
+    void archiveModel(Long id);
+
+    void archiveBrand(Long id);
+
+
 }
