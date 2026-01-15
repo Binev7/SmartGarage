@@ -17,6 +17,12 @@ public class ServiceController {
 
     private final ServiceService serviceService;
 
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ServiceResponseDto>> searchServices(@RequestParam String name) {
+        return ResponseEntity.ok(serviceService.searchServicesByName(name));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ServiceResponseDto> getServiceById(@PathVariable Long id) {
         return ResponseEntity.ok(serviceService.getServiceById(id));
