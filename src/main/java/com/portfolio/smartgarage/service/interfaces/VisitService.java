@@ -2,7 +2,9 @@ package com.portfolio.smartgarage.service.interfaces;
 
 import com.portfolio.smartgarage.dto.visit.CreateVisitDto;
 import com.portfolio.smartgarage.dto.visit.NewCustomerVisitDto;
+import com.portfolio.smartgarage.dto.visit.VisitAdminReportDto;
 import com.portfolio.smartgarage.dto.visit.VisitViewDto;
+import com.portfolio.smartgarage.model.VisitStatus;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,9 +14,11 @@ public interface VisitService {
 
     VisitViewDto createVisit(CreateVisitDto dto);
 
-    public List<VisitViewDto> getVisitsByUser(Long userId, Long vehicleId);
+    List<VisitViewDto> getVisitsByUser(Long userId, Long vehicleId);
 
-    public VisitViewDto getVisitDetails(Long visitId, String currency);
+    VisitViewDto getVisitDetails(Long visitId, String currency);
+
+    VisitAdminReportDto getAdminReport(Long visitId);
 
     VisitViewDto registerVisitForNewCustomer(NewCustomerVisitDto dto);
 
@@ -23,4 +27,7 @@ public interface VisitService {
     Map<LocalDate, String> getCalendarAvailability(LocalDate startDate);
 
     void deleteVisit(Long visitId);
+
+    VisitViewDto updateStatus(Long visitId, VisitStatus newStatus);
+
 }

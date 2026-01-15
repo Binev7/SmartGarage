@@ -1,6 +1,8 @@
 package com.portfolio.smartgarage.dto.visit;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.portfolio.smartgarage.dto.service.ServiceSummaryDto;
+import com.portfolio.smartgarage.helper.constant.Constants;
 import com.portfolio.smartgarage.model.VisitStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,33 +12,29 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
 import java.util.List;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class VisitViewDto {
 
     private Long id;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime date;
+
     private String additionalComments;
     private VisitStatus status;
 
-    private Long userId;
-    private String username;
-    private String userEmail;
-    private String userPhoneNumber;
-
-    private Long clientVehicleId;
     private String vehicleBrand;
     private String vehicleModel;
-    private int vehicleYear;
     private String vehicleLicensePlate;
-    private String vehicleVin; 
 
     private List<ServiceSummaryDto> services;
     private BigDecimal totalPrice;
 
     @Builder.Default
-    private String currency = "BGN";
+    private String currency = Constants.BASE_CURRENCY;
 }

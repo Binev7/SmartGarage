@@ -35,7 +35,6 @@ public class VisitController {
     public ResponseEntity<VisitViewDto> getVisitDetails(
             @PathVariable Long id,
             @RequestParam(defaultValue = "BGN") String currency) {
-
         return ResponseEntity.ok(visitService.getVisitDetails(id, currency));
     }
 
@@ -46,5 +45,12 @@ public class VisitController {
             @RequestParam(required = false) Long vehicleId) {
 
         return ResponseEntity.ok(visitService.getVisitsByUser(user.getId(), vehicleId));
+    }
+
+    @DeleteMapping("/{id}")
+    @IsVisitOwnerOrEmployee
+    public ResponseEntity<Void> cancelVisit(@PathVariable Long id) {
+        visitService.deleteVisit(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.service;
+package com.portfolio.smartgarage.service.impl;
 
 import com.portfolio.smartgarage.dto.service.ServiceRequestDto;
 import com.portfolio.smartgarage.dto.service.ServiceResponseDto;
@@ -22,6 +22,14 @@ public class ServiceServiceImpl implements ServiceService {
     private final ServiceRepository serviceRepository;
     private final ServiceMapper serviceMapper;
     private final VisitRepository visitRepository;
+
+
+    @Override
+    public List<ServiceResponseDto> searchServicesByName(String name) {
+        return serviceRepository.findByNameContainingIgnoreCase(name).stream()
+                .map(serviceMapper::toDto)
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional

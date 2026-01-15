@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.util;
+package com.portfolio.smartgarage.helper.util;
 
 import java.security.SecureRandom;
 
