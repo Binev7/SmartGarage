@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.service;
+package com.portfolio.smartgarage.service.impl;
 
 import com.portfolio.smartgarage.dto.vehicle.*;
 import com.portfolio.smartgarage.exception.ResourceAlreadyExistsException;

@@ -1,20 +1,17 @@
-package com.portfolio.smartgarage.service;
+package com.portfolio.smartgarage.service.impl;
 
 import com.portfolio.smartgarage.dto.vehicle.client.*;
-import com.portfolio.smartgarage.exception.InvalidDataException;
 import com.portfolio.smartgarage.exception.ResourceNotFoundException;
 import com.portfolio.smartgarage.helper.mapper.ClientVehicleMapper;
 import com.portfolio.smartgarage.helper.validator.VehicleValidator;
 import com.portfolio.smartgarage.model.ClientVehicle;
 import com.portfolio.smartgarage.model.User;
 import com.portfolio.smartgarage.model.Vehicle;
-import com.portfolio.smartgarage.model.VisitStatus;
 import com.portfolio.smartgarage.repository.ClientVehicleRepository;
 import com.portfolio.smartgarage.repository.UserRepository;
 import com.portfolio.smartgarage.repository.VehicleRepository;
 import com.portfolio.smartgarage.repository.VisitRepository;
 import com.portfolio.smartgarage.repository.specifications.ClientVehicleSpecifications;
-import com.portfolio.smartgarage.security.CustomUserDetails;
 import com.portfolio.smartgarage.service.interfaces.ClientVehicleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

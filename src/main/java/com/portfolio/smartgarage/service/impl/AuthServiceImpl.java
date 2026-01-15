@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.service;
+package com.portfolio.smartgarage.service.impl;
 
 import com.portfolio.smartgarage.dto.auth.AuthResponseDto;
 import com.portfolio.smartgarage.dto.auth.LoginRequestDto;
