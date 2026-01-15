@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface ServiceService {
 
+    List<ServiceResponseDto> searchServicesByName(String name);
+
     ServiceResponseDto createService(ServiceRequestDto dto);
 
     ServiceResponseDto updateService(Long id, ServiceRequestDto dto);
