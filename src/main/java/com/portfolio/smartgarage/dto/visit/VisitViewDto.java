@@ -2,7 +2,7 @@ package com.portfolio.smartgarage.dto.visit;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.portfolio.smartgarage.dto.service.ServiceSummaryDto;
-import com.portfolio.smartgarage.helper.constant.Constants;
+import com.portfolio.smartgarage.helper.constant.BaseConstants;
 import com.portfolio.smartgarage.model.VisitStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,5 +36,5 @@ public class VisitViewDto {
     private BigDecimal totalPrice;
 
     @Builder.Default
-    private String currency = Constants.BASE_CURRENCY;
+    private String currency = BaseConstants.BASE_CURRENCY;
 }

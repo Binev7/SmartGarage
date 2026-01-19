@@ -1,7 +1,7 @@
 package com.portfolio.smartgarage.helper.util;
 
 import com.portfolio.smartgarage.dto.visit.VisitViewDto;
-import com.portfolio.smartgarage.helper.constant.Constants;
+import com.portfolio.smartgarage.helper.constant.BaseConstants;
 import com.portfolio.smartgarage.helper.mapper.VisitMapper;
 import com.portfolio.smartgarage.model.Visit;
 import com.portfolio.smartgarage.repository.VisitRepository;
@@ -27,7 +27,7 @@ public class VisitHelper {
     private final VisitRepository visitRepository;
 
     public void appendPasswordToComments(VisitViewDto response, String rawPassword) {
-        String passwordMessage = String.format(Constants.SYSTEM_PASS_TEMPLATE, rawPassword);
+        String passwordMessage = String.format(BaseConstants.SYSTEM_PASS_TEMPLATE, rawPassword);
         String current = response.getAdditionalComments();
         response.setAdditionalComments((current == null || current.isBlank())
                 ? passwordMessage : current + " " + passwordMessage);
@@ -36,7 +36,7 @@ public class VisitHelper {
     public VisitViewDto mapWithCurrency(Visit visit, String targetCurrency) {
         VisitViewDto dto = visitMapper.toDto(visit);
         if (targetCurrency != null && !targetCurrency.isBlank() &&
-                !targetCurrency.equalsIgnoreCase(Constants.BASE_CURRENCY)) {
+                !targetCurrency.equalsIgnoreCase(BaseConstants.BASE_CURRENCY)) {
             BigDecimal convertedTotal = currencyService.convert(visit.getTotalPrice(), BASE_CURRENCY, targetCurrency);
             dto.setTotalPrice(convertedTotal);
             dto.setCurrency(targetCurrency.toUpperCase());
@@ -60,12 +60,12 @@ public class VisitHelper {
     }
 
     public <T extends VisitViewDto> T applyCurrency(T dto, BigDecimal basePrice, String targetCurrency) {
-        if (targetCurrency != null && !targetCurrency.isBlank() && !targetCurrency.equalsIgnoreCase(Constants.BASE_CURRENCY)) {
-            BigDecimal convertedTotal = currencyService.convert(basePrice, Constants.BASE_CURRENCY, targetCurrency);
+        if (targetCurrency != null && !targetCurrency.isBlank() && !targetCurrency.equalsIgnoreCase(BaseConstants.BASE_CURRENCY)) {
+            BigDecimal convertedTotal = currencyService.convert(basePrice, BaseConstants.BASE_CURRENCY, targetCurrency);
             dto.setTotalPrice(convertedTotal);
             dto.setCurrency(targetCurrency.toUpperCase());
         } else {
-            dto.setCurrency(Constants.BASE_CURRENCY);
+            dto.setCurrency(BaseConstants.BASE_CURRENCY);
         }
         return dto;
     }
