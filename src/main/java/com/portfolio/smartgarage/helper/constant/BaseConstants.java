@@ -3,7 +3,7 @@ package com.portfolio.smartgarage.helper.constant;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public final class Constants {
+public final class BaseConstants {
 
     public static final int MAX_DAILY_VISITS = 6;
     public static final int CALENDAR_DAYS_HORIZON = 14;
