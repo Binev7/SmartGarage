@@ -6,11 +6,15 @@ import com.portfolio.smartgarage.exception.ResourceNotFoundException;
 import com.portfolio.smartgarage.helper.mapper.VisitMapper;
 import com.portfolio.smartgarage.model.*;
 import com.portfolio.smartgarage.repository.*;
+import com.portfolio.smartgarage.service.interfaces.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -24,6 +28,7 @@ public class CreateAndSaveHelper {
     private final VisitRepository visitRepository;
     private final VisitMapper visitMapper;
     private final ServiceRepository serviceRepository;
+    private final EmailService emailService;
 
 
     public Visit createAndSaveVisit(CreateVisitDto dto, ClientVehicle vehicle) {
@@ -38,6 +43,7 @@ public class CreateAndSaveHelper {
 
     public User createAndSaveUser(NewCustomerVisitDto dto, String rawPassword) {
         User newUser = User.builder()
+                .username(dto.getUsername())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
                 .email(dto.getEmail())
@@ -45,7 +51,20 @@ public class CreateAndSaveHelper {
                 .phoneNumber(dto.getPhoneNumber())
                 .role(Role.CUSTOMER)
                 .build();
-        return userRepository.save(newUser);
+
+        User savedUser = userRepository.save(newUser);
+
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    // Имейлът ще се изпрати само ако всичко в базата е записано успешно
+                    emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getFirstName(), rawPassword);
+                }
+            });
+        }
+
+        return savedUser;
     }
 
     public ClientVehicle createAndSaveVehicle(NewCustomerVisitDto dto, User owner) {
@@ -57,6 +76,7 @@ public class CreateAndSaveHelper {
                 .vin(dto.getVin())
                 .vehicle(catalogVehicle)
                 .owner(owner)
+                .registeredAt(LocalDateTime.now())
                 .build();
         return clientVehicleRepository.save(clientVehicle);
     }
