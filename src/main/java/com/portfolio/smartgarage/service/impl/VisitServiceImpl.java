@@ -5,7 +5,7 @@ import com.portfolio.smartgarage.dto.visit.NewCustomerVisitDto;
 import com.portfolio.smartgarage.dto.visit.VisitAdminReportDto;
 import com.portfolio.smartgarage.dto.visit.VisitViewDto;
 import com.portfolio.smartgarage.exception.ResourceNotFoundException;
-import com.portfolio.smartgarage.helper.constant.Constants;
+import com.portfolio.smartgarage.helper.constant.BaseConstants;
 import com.portfolio.smartgarage.helper.util.CreateAndSaveHelper;
 import com.portfolio.smartgarage.helper.util.VisitHelper;
 import com.portfolio.smartgarage.helper.validator.UserValidator;
@@ -44,7 +44,7 @@ public class VisitServiceImpl implements VisitService {
     public VisitViewDto createVisit(CreateVisitDto dto) {
         visitValidator.validateDailyLimit(
                 dto.getDate().toLocalDate(),
-                Constants.MAX_DAILY_VISITS
+                BaseConstants.MAX_DAILY_VISITS
         );
 
         ClientVehicle vehicle = clientVehicleRepository.findById(dto.getVehicleId())
@@ -61,8 +61,8 @@ public class VisitServiceImpl implements VisitService {
     public Map<LocalDate, String> getCalendarAvailability(LocalDate startDate) {
         return visitHelper.generateAvailabilityCalendar(
                 startDate,
-                Constants.CALENDAR_DAYS_HORIZON,
-                Constants.MAX_DAILY_VISITS
+                BaseConstants.CALENDAR_DAYS_HORIZON,
+                BaseConstants.MAX_DAILY_VISITS
         );
     }
 
@@ -115,7 +115,7 @@ public class VisitServiceImpl implements VisitService {
 
         VisitAdminReportDto adminDto = visitMapper.toAdminReportDto(visit);
 
-        return visitHelper.applyCurrency(adminDto, visit.getTotalPrice(), Constants.BASE_CURRENCY);
+        return visitHelper.applyCurrency(adminDto, visit.getTotalPrice(), BaseConstants.BASE_CURRENCY);
     }
 
     @Override
