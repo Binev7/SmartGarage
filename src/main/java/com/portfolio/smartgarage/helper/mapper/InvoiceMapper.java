@@ -2,7 +2,7 @@ package com.portfolio.smartgarage.helper.mapper;
 
 import com.portfolio.smartgarage.dto.invoice.InvoiceDto;
 import com.portfolio.smartgarage.dto.invoice.ServiceItemDto;
-import com.portfolio.smartgarage.helper.util.VehicleHelper;
+import com.portfolio.smartgarage.helper.util.DisplayFormater;
 import com.portfolio.smartgarage.model.Service;
 import com.portfolio.smartgarage.model.ServiceOrder;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InvoiceMapper {
 
-    private final VehicleHelper vehicleHelper;
+    private final DisplayFormater displayFormater;
 
     public InvoiceDto toInvoiceDto(ServiceOrder order) {
         if (order == null) return null;
@@ -26,10 +26,11 @@ public class InvoiceMapper {
         return InvoiceDto.builder()
                 .invoiceNumber("INV-" + order.getId())
                 .clientName(cv.getOwner().getFirstName() + " " + cv.getOwner().getLastName())
-                .vehicleModel(vehicleHelper.formatFullName(cv))
+                .vehicleModel(displayFormater.formatFullName(cv))
                 .licensePlate(cv.getLicensePlate())
                 .items(mapServiceItems(order.getServices()))
-                .totalAmount(vehicleHelper.toDouble(order.getTotalAmount()))
+                .totalAmount(displayFormater.toDouble(order.getTotalAmount()))
+                .currencyCode("BGN")
                 .build();
     }
 
@@ -38,7 +39,7 @@ public class InvoiceMapper {
 
         return ServiceItemDto.builder()
                 .serviceName(service.getName())
-                .price(vehicleHelper.toDouble(service.getPrice()))
+                .price(displayFormater.toDouble(service.getPrice()))
                 .build();
     }
 

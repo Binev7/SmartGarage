@@ -13,6 +13,7 @@ public class InvoiceDto {
     private String licensePlate;
     private List<ServiceItemDto> items;
     private Double totalAmount;
+    private String currencyCode;
 }
 
 
