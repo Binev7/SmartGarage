@@ -1,6 +1,7 @@
 package com.portfolio.smartgarage.service.impl;
 
 import com.portfolio.smartgarage.exception.ExternalServiceException;
+import com.portfolio.smartgarage.helper.util.DisplayFormater;
 import com.portfolio.smartgarage.service.interfaces.CurrencyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,7 +16,13 @@ import java.math.RoundingMode;
 public class CurrencyServiceImpl implements CurrencyService {
 
     private final RestClient currencyRestClient;
+    private final DisplayFormater displayFormater;
 
+
+    @Override
+    public String format(Double amount, String currencyCode) {
+        return displayFormater.formatCurrency(amount, currencyCode);
+    }
 
     @Override
     @Cacheable(value = "exchangeRates", key = "{#from, #to}")
