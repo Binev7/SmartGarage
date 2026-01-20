@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 
 @Component
-public class VehicleHelper {
+public class DisplayFormater {
 
     public String formatFullName(ClientVehicle cv) {
         if (cv == null || cv.getVehicle() == null) return "Unknown Vehicle";
@@ -18,6 +18,13 @@ public class VehicleHelper {
                 brand.getName(),
                 model.getName(),
                 vehicle.getYear());
+    }
+
+    public String formatCurrency(Double amount, String currencyCode) {
+        if (amount == null) amount = 0.0;
+        if (currencyCode == null) currencyCode = "BGN";
+
+        return String.format("%.2f %s", amount, currencyCode);
     }
 
     public Double toDouble(BigDecimal value) {
