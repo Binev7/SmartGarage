@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.controller.admin;
+package com.portfolio.smartgarage.controller.rest.admin;
 
 import com.portfolio.smartgarage.dto.service.ServiceRequestDto;
 import com.portfolio.smartgarage.dto.service.ServiceResponseDto;
@@ -14,7 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/admin/services")
+@RequestMapping("/api/admin/services")
 @PreAuthorize("hasRole('EMPLOYEE')")
 @RequiredArgsConstructor
 @Tag(name = "Admin Services", description = "Endpoints for managing the garage service catalog")

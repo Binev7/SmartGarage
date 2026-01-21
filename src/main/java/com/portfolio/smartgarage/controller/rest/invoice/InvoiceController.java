@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.controller.invoice;
+package com.portfolio.smartgarage.controller.rest.invoice;
 
 import com.portfolio.smartgarage.dto.invoice.InvoiceDto;
 import com.portfolio.smartgarage.service.impl.PdfServiceImpl;
@@ -12,7 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/invoices")
+@RequestMapping("/api/invoices")
 @RequiredArgsConstructor
 @Tag(name = "Invoices", description = "Endpoints for generating and downloading financial documents")
 public class InvoiceController {

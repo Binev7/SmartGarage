@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.controller.base;
+package com.portfolio.smartgarage.controller.rest.base;
 
 import com.portfolio.smartgarage.dto.visit.VisitViewDto;
 import com.portfolio.smartgarage.security.CustomUserDetails;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/visits")
+@RequestMapping("/api/visits")
 @IsEmployeeOrCustomer
 @RequiredArgsConstructor
 @Tag(name = "Visits", description = "Customer-facing endpoints for managing and viewing garage visits")

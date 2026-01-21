@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.controller.admin;
+package com.portfolio.smartgarage.controller.rest.admin;
 
 import com.portfolio.smartgarage.dto.visit.CreateVisitDto;
 import com.portfolio.smartgarage.dto.visit.NewCustomerVisitDto;
@@ -17,7 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/admin/visits")
+@RequestMapping("/api/admin/visits")
 @PreAuthorize("hasRole('EMPLOYEE')")
 @RequiredArgsConstructor
 @Tag(name = "Admin Visits", description = "Endpoints for managing the lifecycle of garage visits and repair jobs")

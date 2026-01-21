@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.controller.auth;
+package com.portfolio.smartgarage.controller.rest.auth;
 
 import com.portfolio.smartgarage.dto.auth.*;
 import com.portfolio.smartgarage.helper.constant.EmailConstants;
@@ -6,13 +6,15 @@ import com.portfolio.smartgarage.service.interfaces.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Tag(name = "Authentication", description = "Endpoints for user registration, login, and password recovery")
 public class AuthController {
@@ -28,8 +30,18 @@ public class AuthController {
 
     @Operation(summary = "User login", description = "Authenticates user credentials and returns a JWT token.")
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody LoginRequestDto request, HttpServletResponse response) {
+        AuthResponseDto authResponse = authService.login(request);
+
+        Cookie jwtCookie = new Cookie("jwt", authResponse.getToken());
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(false);
+        jwtCookie.setPath("/api");
+        jwtCookie.setMaxAge(24 * 60 * 60);
+
+        response.addCookie(jwtCookie);
+
+        return ResponseEntity.ok(authResponse);
     }
 
     @Operation(summary = "Forgot password", description = "Initiates the password recovery process by sending a reset link to the user's email.")

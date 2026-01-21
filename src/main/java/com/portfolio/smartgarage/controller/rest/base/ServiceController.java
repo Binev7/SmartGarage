@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.controller.base;
+package com.portfolio.smartgarage.controller.rest.base;
 
 import com.portfolio.smartgarage.dto.service.ServiceResponseDto;
 import com.portfolio.smartgarage.security.annotation.IsEmployeeOrCustomer;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/services")
+@RequestMapping("/api/services")
 @IsEmployeeOrCustomer
 @RequiredArgsConstructor
 @Tag(name = "Services", description = "Endpoints for viewing available garage services, accessible by both customers and employees")
