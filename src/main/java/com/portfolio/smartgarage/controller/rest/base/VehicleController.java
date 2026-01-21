@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.controller.base;
+package com.portfolio.smartgarage.controller.rest.base;
 
 import com.portfolio.smartgarage.dto.vehicle.*;
 import com.portfolio.smartgarage.dto.vehicle.client.ClientVehicleRequestDto;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/vehicles")
+@RequestMapping("/api/vehicles")
 @RequiredArgsConstructor
 @Tag(name = "Vehicles", description = "Endpoints for vehicle catalog lookup and personal vehicle management")
 public class VehicleController {

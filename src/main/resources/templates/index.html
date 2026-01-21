@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smart Garage | Home</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+</head>
+<body>
+
+<div th:replace="~{fragments/common :: navbar}"></div>
+
+<header class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8"> <h1 class="display-3 fw-bold mb-4">AUTO MAINTENANCE <br> & REPAIR SERVICE</h1>
+                <p class="lead mb-5 text-secondary">Premium automotive care and maintenance you can trust.</p>
+                <a th:href="@{/services}" class="btn btn-orange">GET SERVICE</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="py-5 border-top border-secondary">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3">
+                <span class="stat-number" th:text="${totalRepairs}">0</span>
+                <span class="stat-label">Repairs Done</span>
+            </div>
+
+            <div class="col-md-3">
+                <span class="stat-number" th:text="${yearsExperience}">0</span>
+                <span class="stat-label">Years Experience</span>
+            </div>
+
+            <div class="col-md-3">
+                <span class="stat-number" th:text="${satisfiedClients}">0</span>
+                <span class="stat-label">Happy Clients</span>
+            </div>
+
+            <div class="col-md-3">
+                <span class="stat-number" th:text="${successRate}">0%</span>
+                <span class="stat-label">Success Rate</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

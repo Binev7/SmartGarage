@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.controller.admin;
+package com.portfolio.smartgarage.controller.rest.admin;
 
 import com.portfolio.smartgarage.dto.vehicle.*;
 import com.portfolio.smartgarage.dto.vehicle.client.ClientVehicleRequestDto;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/vehicles")
+@RequestMapping("/api/admin/vehicles")
 @PreAuthorize("hasRole('EMPLOYEE')")
 @RequiredArgsConstructor
 @Tag(name = "Admin Vehicles", description = "Endpoints for managing client vehicles, brands, models, and the general catalog")

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="header-css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">
+            <span style="color: #ff6600;">SMART</span>GARAGE
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" th:href="@{/}">HOME</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/about}">ABOUT</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/services}">SERVICES</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/contacts}">CONTACTS</a></li>
+            </ul>
+        </div>
+        <a href="tel:+359123456" class="text-white text-decoration-none d-none d-lg-block">
+            +359 123 456 789
+        </a>
+    </div>
+</nav>
+
+</body>
+</html>
