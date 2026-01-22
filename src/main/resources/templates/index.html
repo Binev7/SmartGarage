@@ -11,9 +11,15 @@
 <header class="hero-section">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-8"> <h1 class="display-3 fw-bold mb-4">AUTO MAINTENANCE <br> & REPAIR SERVICE</h1>
+            <div class="col-lg-8">
+                <h1 class="display-3 fw-bold mb-4">AUTO MAINTENANCE <br> & REPAIR SERVICE</h1>
                 <p class="lead mb-5 text-secondary">Premium automotive care and maintenance you can trust.</p>
-                <a th:href="@{/services}" class="btn btn-orange">GET SERVICE</a>
+
+                <div class="d-flex gap-3">
+                    <a th:href="@{/services}" class="btn btn-orange">GET SERVICE</a>
+                    <a th:href="@{/auth/register}" class="btn btn-outline-light rounded-0 px-4 d-flex align-items-center">JOIN US NOW</a>
+                </div>
+
             </div>
         </div>
     </div>
