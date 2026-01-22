@@ -3,7 +3,6 @@ package com.portfolio.smartgarage.service.impl;
 import com.portfolio.smartgarage.dto.auth.*;
 import com.portfolio.smartgarage.exception.ResourceAlreadyExistsException;
 import com.portfolio.smartgarage.exception.ResourceNotFoundException;
-import com.portfolio.smartgarage.helper.constant.EmailConstants;
 import com.portfolio.smartgarage.helper.mapper.UserMapper;
 import com.portfolio.smartgarage.model.PasswordResetToken;
 import com.portfolio.smartgarage.model.Role;
@@ -14,6 +13,7 @@ import com.portfolio.smartgarage.service.interfaces.AuthService;
 import com.portfolio.smartgarage.service.interfaces.EmailService;
 import com.portfolio.smartgarage.service.interfaces.PasswordResetTokenService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -67,10 +68,18 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void forgotPassword(String email) {
-        userRepository.findByEmail(email).ifPresent(user -> {
+        userRepository.findByEmail(email).ifPresentOrElse(user -> {
+
             String token = tokenService.createTokenForUser(user);
-            String resetLink = String.format("%s/api/auth/reset-password?token=%s", baseUrl, token);
+
+            String resetLink = String.format("%s/auth/reset-password?token=%s", baseUrl, token);
+
+            log.info("Password reset requested for user: {}", email);
+
             emailService.sendPasswordResetEmail(user.getEmail(), user.getFirstName(), resetLink);
+
+        }, () -> {
+            log.warn("Password reset attempted for non-existent email: {}", email);
         });
     }
 
@@ -78,7 +87,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public AuthResponseDto resetPassword(ResetPasswordRequestDto request) {
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
-            throw new IllegalArgumentException(EmailConstants.PASSWORDS_DO_NOT_MATCH_MESSAGE);
+            throw new IllegalArgumentException("Passwords do not match!");
         }
 
         PasswordResetToken resetToken = tokenService.validateToken(request.getToken());

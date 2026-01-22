@@ -13,20 +13,23 @@
         <a class="navbar-brand fw-bold" th:href="@{/}">
             <span style="color: #ff6600;">SMART</span>GARAGE
         </a>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-            <ul class="navbar-nav">
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
                 <li class="nav-item"><a class="nav-link" th:href="@{/}">HOME</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/about}">ABOUT</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/services}">SERVICES</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/contacts}">CONTACTS</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/about}">ABOUT</a></li>
             </ul>
+
+            <div class="d-flex align-items-center gap-3">
+                <a th:href="@{/auth/login}" class="text-white text-decoration-none small fw-bold">LOGIN</a>
+                <a th:href="@{/auth/register}" class="btn btn-outline-warning btn-sm rounded-0">REGISTER</a>
+            </div>
         </div>
-        <a href="tel:+359123456" class="text-white text-decoration-none d-none d-lg-block">
-            +359 123 456 789
-        </a>
     </div>
 </nav>
 

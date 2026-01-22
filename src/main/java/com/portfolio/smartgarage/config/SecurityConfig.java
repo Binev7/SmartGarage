@@ -30,27 +30,29 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
+
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-                .authorizeHttpRequests(auth -> auth
 
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/index", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
 
                         .requestMatchers("/auth/**", "/public/**", "/error").permitAll()
 
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
 
-                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
                         .requestMatchers("/admin/**").hasRole("EMPLOYEE")
                         .requestMatchers("/customer/**").hasRole("CUSTOMER")
 
+                        .requestMatchers("/api/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
+
                 .authenticationProvider(authenticationProvider())
-
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-
                 .build();
     }
 

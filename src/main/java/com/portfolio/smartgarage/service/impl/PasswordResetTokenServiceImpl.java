@@ -23,6 +23,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
     @Transactional
     public String createTokenForUser(User user) {
         tokenRepository.deleteByUser(user);
+        tokenRepository.flush();
 
         String token = UUID.randomUUID().toString();
         PasswordResetToken resetToken = PasswordResetToken.builder()
