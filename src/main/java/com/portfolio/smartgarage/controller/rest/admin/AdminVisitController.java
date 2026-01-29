@@ -1,10 +1,12 @@
 package com.portfolio.smartgarage.controller.rest.admin;
 
+import com.portfolio.smartgarage.dto.vehicle.client.ClientVehicleResponseDto;
 import com.portfolio.smartgarage.dto.visit.CreateVisitDto;
 import com.portfolio.smartgarage.dto.visit.NewCustomerVisitDto;
 import com.portfolio.smartgarage.dto.visit.VisitAdminReportDto;
 import com.portfolio.smartgarage.dto.visit.VisitViewDto;
 import com.portfolio.smartgarage.model.VisitStatus;
+import com.portfolio.smartgarage.service.interfaces.ClientVehicleService;
 import com.portfolio.smartgarage.service.interfaces.VisitService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,11 +26,16 @@ import org.springframework.web.bind.annotation.*;
 public class AdminVisitController {
 
     private final VisitService visitService;
+    private final ClientVehicleService clientVehicleService;
 
     @Operation(summary = "Register a new visit", description = "Creates a service visit record for an existing customer and their vehicle.")
     @PostMapping
     public ResponseEntity<VisitViewDto> registerVisit(@Valid @RequestBody CreateVisitDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(visitService.createVisit(dto));
+        ClientVehicleResponseDto vehicle = clientVehicleService.getVehicleById(dto.getClientVehicleId());
+
+        VisitViewDto createdVisit = visitService.createVisit(dto, vehicle.getOwnerId());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdVisit);
     }
 
     @Operation(summary = "Register visit for new customer", description = "Performs a 'one-stop' registration: creates a new user, registers their vehicle, and opens a visit record.")

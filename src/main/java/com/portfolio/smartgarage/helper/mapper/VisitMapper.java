@@ -37,6 +37,7 @@ public class VisitMapper {
 
                 .vehicleBrand(visit.getClientVehicle().getVehicle().getModel().getBrand().getName())
                 .vehicleModel(visit.getClientVehicle().getVehicle().getModel().getName())
+                .vehicleYear(visit.getClientVehicle().getVehicle().getYear())
                 .vehicleLicensePlate(visit.getClientVehicle().getLicensePlate())
 
                 .services(visit.getServices().stream()

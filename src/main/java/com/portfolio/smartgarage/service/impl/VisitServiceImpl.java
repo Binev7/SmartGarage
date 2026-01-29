@@ -16,6 +16,7 @@ import com.portfolio.smartgarage.repository.*;
 import com.portfolio.smartgarage.service.interfaces.VisitService;
 import com.portfolio.smartgarage.helper.util.PasswordGenerator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,19 +42,28 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     @Transactional
-    public VisitViewDto createVisit(CreateVisitDto dto) {
+    public VisitViewDto createVisit(CreateVisitDto dto, Long userId) {
+        // 1. Валидация на дневния лимит (бизнес правило)
         visitValidator.validateDailyLimit(
                 dto.getDate().toLocalDate(),
                 BaseConstants.MAX_DAILY_VISITS
         );
 
-        ClientVehicle vehicle = clientVehicleRepository.findById(dto.getVehicleId())
+        // 2. Намиране на автомобила
+        ClientVehicle vehicle = clientVehicleRepository.findById(dto.getClientVehicleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
 
-        visitValidator.validateVehicleOwnership(vehicle.getOwner(), vehicle);
+        // 3. Сигурност: Проверка на собственост
+        if (!vehicle.getOwner().getId().equals(userId)) {
+            throw new AccessDeniedException("You are not the owner of this vehicle.");
+        }
 
+        // 4. ДЕЛЕГИРАНЕ: CreateAndSaveHelper поема намирането на услуги,
+        // изчисляването на тотал и записа в базата.
         Visit savedVisit = createAndSaveHelper.createAndSaveVisit(dto, vehicle);
 
+        // 5. ДЕЛЕГИРАНЕ: VisitHelper поема мапването към DTO и
+        // настройването на базовата валута (BGN).
         return visitHelper.mapWithCurrency(savedVisit, null);
     }
 

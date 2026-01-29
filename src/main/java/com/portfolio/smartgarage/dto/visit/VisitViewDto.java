@@ -30,6 +30,7 @@ public class VisitViewDto {
 
     private String vehicleBrand;
     private String vehicleModel;
+    private Integer vehicleYear;
     private String vehicleLicensePlate;
 
     private List<ServiceSummaryDto> services;

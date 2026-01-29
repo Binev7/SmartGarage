@@ -1,5 +1,6 @@
 package com.portfolio.smartgarage.controller.rest.base;
 
+import com.portfolio.smartgarage.dto.visit.CreateVisitDto;
 import com.portfolio.smartgarage.dto.visit.VisitViewDto;
 import com.portfolio.smartgarage.security.CustomUserDetails;
 import com.portfolio.smartgarage.security.annotation.IsEmployeeOrCustomer;
@@ -8,6 +9,7 @@ import com.portfolio.smartgarage.service.interfaces.VisitService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,17 @@ import java.util.Map;
 public class VisitController {
 
     private final VisitService visitService;
+
+
+    @Operation(summary = "Book a service visit", description = "Creates a new visit request with selected services and date.")
+    @PostMapping
+    public ResponseEntity<VisitViewDto> bookVisit(
+            @Valid @RequestBody CreateVisitDto createVisitDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        // Подаваме ID-то на потребителя от токена/сесията за сигурност
+        return ResponseEntity.ok(visitService.createVisit(createVisitDto, userDetails.getId()));
+    }
 
     @Operation(summary = "Check calendar availability", description = "Returns a map of dates and their availability status starting from the given date.")
     @GetMapping("/availability")
