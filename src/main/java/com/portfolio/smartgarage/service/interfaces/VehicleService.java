@@ -12,6 +12,8 @@ public interface VehicleService {
 
     List<Integer> getAvailableYearsForModel(Long modelId);
 
+    Long getVehicleIdByModelAndYear(Long modelId, Integer year);
+
     BrandResponseDto createBrand(BrandRequestDto dto);
 
     ModelResponseDto createModel(ModelRequestDto dto);
