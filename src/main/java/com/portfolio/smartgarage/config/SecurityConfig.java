@@ -36,22 +36,38 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/index", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
-
                         .requestMatchers("/auth/**", "/public/**", "/error").permitAll()
-
                         .requestMatchers("/api/auth/**").permitAll()
-
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
                         .requestMatchers("/admin/**").hasRole("EMPLOYEE")
                         .requestMatchers("/customer/**").hasRole("CUSTOMER")
-
                         .requestMatchers("/api/**").authenticated()
 
                         .anyRequest().authenticated()
                 )
 
+                .formLogin(form -> form
+                        .loginPage("/auth/login")
+                        .loginProcessingUrl("/auth/login")
+                        .usernameParameter("email")    // ТОВА свързва HTML името с бекенда
+                        .passwordParameter("password")
+                        .defaultSuccessUrl("/auth/home", true) // Пренасочва към "умния" метод
+                        .permitAll()
+                )
+
+                .logout(logout -> logout
+                        // ПОПРАВКА: Синхронизирано с th:action="@{/logout}" в HTML
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/auth/login?logout")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true) // Изчиства аутентикацията изрично
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
+                )
+
                 .authenticationProvider(authenticationProvider())
+                // JWT филтърът се изпълнява преди стандартния Username/Password
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
