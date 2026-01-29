@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smart Garage | Step 1: Date & Time</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+    <style>
+        .date-card { background: #1a1a1a; border: 1px solid #333; cursor: pointer; transition: 0.3s; padding: 15px; text-align: center; }
+        .date-card:hover:not(.disabled) { border-color: #ff6600; }
+        .date-card.selected { background: #ff6600 !important; color: #000 !important; }
+        .date-card.disabled { opacity: 0.3; cursor: not-allowed; background: #000; }
+        .time-pill { cursor: pointer; border: 1px solid #333; transition: 0.2s; }
+        .time-pill:hover { border-color: #ff6600; }
+        .btn-check:checked + .time-pill { background: #ff6600; border-color: #ff6600; color: #000; }
+        .text-orange { color: #ff6600; }
+    </style>
+</head>
+<body class="bg-dark text-white">
+<div th:replace="~{fragments/common :: navbar-customer}"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center text-center mb-5">
+        <div class="col-lg-8">
+            <span class="text-orange fw-bold small text-uppercase">Step 1 of 3</span>
+            <h2 class="fw-bold text-uppercase">Select <span class="text-orange">Date & Time</span></h2>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h5 class="fw-bold mb-3 text-secondary small text-uppercase">Available Dates</h5>
+            <div class="row row-cols-2 row-cols-md-4 row-cols-lg-7 g-3 mb-5">
+                <div th:each="entry : ${availability}" class="col text-center">
+                    <div class="date-card h-100"
+                         th:classappend="${#strings.contains(entry.value, 'FULL')} ? 'disabled' : ''"
+                         th:data-date="${#temporals.format(entry.key, 'yyyy-MM-dd')}"
+                         onclick="selectDate(this)">
+                        <small class="d-block text-uppercase fw-bold" th:text="${#temporals.format(entry.key, 'EEE')}">Mon</small>
+                        <strong class="fs-3 d-block my-1" th:text="${#temporals.format(entry.key, 'dd')}">28</strong>
+                        <small class="d-block opacity-75" th:text="${#temporals.format(entry.key, 'MMM')}">Jan</small>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="fw-bold mb-3 text-secondary small text-uppercase">Available Times</h5>
+            <div class="d-flex flex-wrap gap-2 mb-5 justify-content-center">
+                <div th:each="t : ${times}">
+                    <input type="radio" name="time" th:value="${t}" th:id="${t}" class="btn-check">
+                    <label class="btn btn-outline-light time-pill px-4 py-2 rounded-0" th:for="${t}" th:text="${t}">09:00</label>
+                </div>
+            </div>
+
+            <div class="text-center pt-4 border-top border-secondary">
+                <button onclick="proceedToStep2()" class="btn btn-orange px-5 py-3 fw-bold rounded-0 text-uppercase">Next: Select Services →</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    let selectedDate = null;
+
+    function selectDate(element) {
+        if (element.classList.contains('disabled')) return;
+        document.querySelectorAll('.date-card').forEach(c => c.classList.remove('selected'));
+        element.classList.add('selected');
+        selectedDate = element.getAttribute('data-date');
+    }
+
+    function proceedToStep2() {
+        const timeInput = document.querySelector('input[name="time"]:checked');
+        const vehicleId = [[${clientVehicleId}]];
+
+        if (!selectedDate || !timeInput) {
+            alert("Please select both a date and a time slot.");
+            return;
+        }
+
+        const time = timeInput.value;
+        window.location.href = `/customer/visits/book/step2?vehicleId=${vehicleId}&date=${selectedDate}T${time}:00`;
+    }
+</script>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+</body>
+</html>
