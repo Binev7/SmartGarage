@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Smart Garage | Vehicle Details</title>
+    <th:block th:replace="~{fragments/common :: header-css}" />
+    <style>
+        .detail-card { background: #161616; border-left: 4px solid #ff6600; padding: 30px; }
+        .spec-label { color: #ff6600; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
+        .timeline-item { border-left: 2px solid #333; padding-left: 20px; position: relative; margin-bottom: 25px; }
+        .timeline-item::before {
+            content: ''; position: absolute; left: -7px; top: 5px;
+            width: 12px; height: 12px; background: #ff6600; border-radius: 50%;
+        }
+        .text-orange { color: #ff6600; }
+        .btn-orange { background-color: #ff6600; color: white; border: none; }
+        .btn-orange:hover { background-color: #e65c00; color: white; }
+    </style>
+</head>
+<body class="bg-dark text-white">
+<div th:replace="~{fragments/common :: navbar-customer}"></div>
+
+<div class="container py-5">
+    <a th:href="@{/customer/dashboard}" class="btn btn-link text-secondary text-decoration-none p-0 mb-4 small">← BACK TO GARAGE</a>
+
+    <div class="row g-5">
+        <div class="col-lg-4">
+            <div class="detail-card shadow-lg">
+                <h2 class="fw-bold text-white mb-4">
+                    <span th:text="${v.brandName + ' ' + v.modelName}">BMW M5</span>
+                    <span class="text-secondary fw-light ms-2" th:text="${v.year}">2022</span>
+                </h2>
+
+                <div class="mb-3">
+                    <p class="spec-label mb-0">License Plate</p>
+                    <h5 class="fw-bold" th:text="${v.licensePlate}">CB1234AB</h5>
+                </div>
+
+                <div class="mb-3">
+                    <p class="spec-label mb-0">VIN Number</p>
+                    <p class="font-monospace text-light" th:text="${v.vin}">WBA123...</p>
+                </div>
+
+                <div class="d-grid mt-4 gap-2">
+                    <a th:href="@{/customer/visits/book/step1(vehicleId=${v.id})}"
+                       class="btn btn-orange fw-bold rounded-0 py-3">BOOK NEW SERVICE</a>
+
+                    <button type="button" class="btn btn-outline-danger rounded-0"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        DELETE VEHICLE
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <h3 class="fw-bold mb-4">SERVICE <span class="text-orange">HISTORY</span></h3>
+
+            <div th:if="${#lists.isEmpty(visits)}" class="p-5 text-center bg-black border border-secondary text-secondary">
+                No service records found for this vehicle.
+            </div>
+
+            <div th:each="visit : ${visits}" class="timeline-item">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="fw-bold text-white mb-1" th:text="${#temporals.format(visit.date, 'dd MMM yyyy')}">27 Jan 2026</h5>
+
+                        <div class="mb-2">
+                            <span th:each="s : ${visit.services}"
+                                  class="badge bg-secondary me-1 fw-normal"
+                                  th:text="${s.name}">Oil Change</span>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <p class="text-orange fw-bold fs-5 mb-0" th:text="${visit.totalPrice + ' BGN'}">100.00 BGN</p>
+                        <span class="badge"
+                              th:classappend="${visit.status.name() == 'COMPLETED' ? 'bg-success' : 'bg-warning'}"
+                              th:text="${visit.status}">COMPLETED</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-black border border-secondary text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fw-bold">Delete Vehicle?</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-secondary">
+                Are you sure you want to remove the
+                <strong class="text-white" th:text="${v.brandName + ' ' + v.modelName}">Car</strong>
+                from your garage? This action cannot be undone.
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Cancel</button>
+
+                <form th:action="@{/customer/vehicles/delete/{id}(id=${v.id})}" method="post">
+
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" th:if="${_csrf == null}" name="_csrf" value="" />
+
+                    <button type="submit" class="btn btn-danger rounded-0 px-4">Yes, Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+</body>
+</html>
