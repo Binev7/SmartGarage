@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smart Garage | Step 3: Confirm</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+    <style>
+        .summary-card {
+            background: #161616;
+            border-left: 4px solid #ff6600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .text-orange { color: #ff6600 !important; }
+        .btn-orange { background-color: #ff6600; color: #000; border: none; }
+        .btn-orange:hover { background-color: #e65c00; color: #000; }
+
+        /* НОВ СТИЛ ЗА КОМЕНТАРИТЕ */
+        .comments-area {
+            background-color: #6a6969 !important;
+            color: #212529 !important;
+            border: 2px solid #6a6969 !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .comments-area:focus {
+            background-color: #ffffff !important;
+            border-color: #ff6600 !important;
+            box-shadow: 0 0 0 0.25 margin rgba(255, 102, 0, 0.25);
+        }
+        .comments-label {
+            color: #adb5bd;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body class="bg-dark text-white">
+<div th:replace="~{fragments/common :: navbar-customer}"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center text-center mb-5">
+        <div class="col-lg-8">
+            <span class="text-orange fw-bold small text-uppercase">Step 3 of 3</span>
+            <h2 class="fw-bold text-uppercase">Review & <span class="text-orange">Confirm</span></h2>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <form th:action="@{/customer/visits/add}" th:object="${visitDto}" method="POST">
+                <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" th:field="*{clientVehicleId}">
+                <input type="hidden" th:field="*{date}">
+
+                <th:block th:each="id : *{serviceIds}">
+                    <input type="hidden" name="serviceIds" th:value="${id}">
+                </th:block>
+
+                <div class="summary-card p-4 mb-5">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <p class="text-secondary text-uppercase small mb-1 fw-bold">Vehicle</p>
+                            <h4 class="fw-bold m-0 text-white" th:text="${vehicle.brandName + ' ' + vehicle.modelName}">BMW M5</h4>
+                            <span class="badge bg-dark border border-secondary text-orange mt-2" th:text="${vehicle.licensePlate}">CB1234AB</span>
+                        </div>
+                        <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                            <p class="text-secondary text-uppercase small mb-1 fw-bold">Appointment</p>
+                            <h3 class="text-orange fw-bold m-0" th:text="${#temporals.format(visitDto.date, 'dd MMMM yyyy')}">28 Jan 2026</h3>
+                            <span class="fs-4" th:text="${#temporals.format(visitDto.date, 'HH:mm')}">14:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label class="comments-label fw-bold small text-uppercase mb-2 d-block">
+                        <i class="bi bi-chat-left-text me-2"></i>Additional Comments / Notes
+                    </label>
+                    <textarea th:field="*{additionalComments}"
+                              class="form-control comments-area rounded-0 p-3"
+                              rows="4"
+                              placeholder="Describe the problem or list specific requirements here..."></textarea>
+                    <small class="text-secondary mt-2 d-block">This info helps our mechanics prepare for your visit.</small>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between pt-4 border-top border-secondary">
+                    <button type="button" onclick="history.back()" class="btn btn-link text-secondary text-decoration-none p-0">
+                        ← Back to Services
+                    </button>
+                    <button type="submit" class="btn btn-orange px-5 py-3 fw-bold rounded-0 text-uppercase">
+                        Complete Booking →
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+</body>
+</html>

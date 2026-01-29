@@ -15,8 +15,8 @@ public class ClientVehicleRequestDto {
 
     @NotBlank(message = "License plate is required")
     @Pattern(
-            regexp = "^(A|B|BH|BP|BT|C|CA|CB|CH|EB|G|H|K|KH|M|OB|P|PA|PB|PK|PP|S|SA|SM|T|TX|V|Y)\\d{4}[A-Z]{2}$",
-            message = "Invalid Bulgarian license plate format (e.g., CB1234AB)"
+            regexp = "^(A|B|BH|BP|BT|C|CA|CB|CH|CO|CT|E|EB|G|H|K|KH|M|OB|P|PA|PB|PK|PP|S|SA|SM|T|TX|V|X|Y)\\d{4}[A-Z]{1,2}$",
+            message = "Invalid Bulgarian license plate format (e.g., CT1234AB, CB1234AB, X1234AA)"
     )
     private String licensePlate;
 

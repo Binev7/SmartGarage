@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smart Garage | Service History</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+    <style>
+        .filter-section { background: #161616; border-bottom: 2px solid #ff6600; padding: 25px 0; }
+        .timeline-item {
+            background: #1a1a1a;
+            border-left: 4px solid #333;
+            transition: 0.3s;
+            position: relative;
+        }
+        .timeline-item:hover { border-left-color: #ff6600; transform: translateX(5px); }
+        .timeline-date { color: #ff6600; font-weight: 800; font-size: 0.85rem; }
+        .status-pill { font-size: 0.7rem; padding: 4px 10px; font-weight: bold; }
+        .bg-completed { background: #198754; }
+        .bg-pending { background: #ffc107; color: #000; }
+        .bg-progress { background: #0dcaf0; color: #000; }
+        .form-select-dark {
+            background-color: #000; border: 1px solid #333; color: white;
+        }
+        .form-select-dark:focus { border-color: #ff6600; box-shadow: none; color: white; }
+    </style>
+</head>
+<body class="bg-dark text-white">
+<div th:replace="~{fragments/common :: navbar-customer}"></div>
+
+<div class="filter-section mt-5">
+    <div class="container mt-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 class="fw-bold m-0 text-uppercase">Full <span class="text-orange">History</span></h2>
+            </div>
+            <div class="col-md-6">
+                <form th:action="@{/customer/visits/history}" method="GET" class="d-flex gap-2 justify-content-md-end mt-3 mt-md-0">
+                    <select name="vehicleId" class="form-select form-select-dark rounded-0 w-auto" onchange="this.form.submit()">
+                        <option value="">All Vehicles</option>
+                        <option th:each="v : ${vehicles}"
+                                th:value="${v.id}"
+                                th:text="${v.brandName + ' ' + v.modelName + ' (' + v.licensePlate + ')'}"
+                                th:selected="${v.id == selectedVehicleId}">
+                        </option>
+                    </select>
+                    <a th:href="@{/customer/visits/history}" class="btn btn-outline-secondary rounded-0" th:if="${selectedVehicleId != null}">Clear</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<main class="container py-5">
+    <div th:if="${visits.empty}" class="text-center py-5 bg-black border border-secondary">
+        <i class="bi bi-calendar-x fs-1 text-secondary mb-3 d-block"></i>
+        <h4 class="text-secondary">No service records found.</h4>
+        <p class="text-secondary small">Your service history will appear here once you book an appointment.</p>
+        <a th:href="@{/customer/dashboard}" class="btn btn-orange mt-3 rounded-0 px-4">GO TO GARAGE</a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div th:each="visit : ${visits}" class="timeline-item p-4 mb-4 shadow-sm">
+                <div class="row align-items-center">
+                    <div class="col-md-2 mb-3 mb-md-0">
+                        <span class="timeline-date d-block text-uppercase" th:text="${#temporals.format(visit.date, 'dd MMM yyyy')}">28 JAN 2026</span>
+                        <span class="small opacity-50" th:text="${#temporals.format(visit.date, 'HH:mm')}">14:00</span>
+                        <div class="mt-2">
+                            <span class="status-pill text-uppercase"
+                                  th:classappend="${visit.status.name() == 'COMPLETED' ? 'bg-completed' : (visit.status.name() == 'PENDING' ? 'bg-pending' : 'bg-progress')}"
+                                  th:text="${visit.status}">PENDING</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <h5 class="fw-bold mb-1" th:text="${visit.vehicleBrand + ' ' + visit.vehicleModel}">BMW M5</h5>
+                        <p class="text-secondary small mb-0 font-monospace" th:text="${visit.vehicleLicensePlate}">CB1234AB</p>
+                    </div>
+
+                    <div class="col-md-4">
+                        <p class="text-secondary small text-uppercase fw-bold mb-1">Services</p>
+                        <div class="d-flex flex-wrap gap-1">
+                            <span th:each="s : ${visit.services}"
+                                  class="badge bg-dark border border-secondary fw-normal"
+                                  th:text="${s.name}">Oil Change</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 text-md-end mt-3 mt-md-0 border-start border-secondary ps-4">
+                        <p class="text-orange fw-bold fs-5 mb-2" th:text="${visit.totalPrice + ' BGN'}">150.00 BGN</p>
+                        <a th:href="@{/customer/visits/details/{id}(id=${visit.id})}"
+                           class="btn btn-sm btn-outline-light w-100 rounded-0">DETAILS</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+</body>
+</html>

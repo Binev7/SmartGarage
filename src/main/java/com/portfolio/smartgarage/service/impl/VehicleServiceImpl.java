@@ -13,6 +13,7 @@ import com.portfolio.smartgarage.repository.BrandRepository;
 import com.portfolio.smartgarage.repository.ModelRepository;
 import com.portfolio.smartgarage.repository.VehicleRepository;
 import com.portfolio.smartgarage.service.interfaces.VehicleService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +52,13 @@ public class VehicleServiceImpl implements VehicleService {
                 .distinct()
                 .sorted((a, b) -> b - a)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Long getVehicleIdByModelAndYear(Long modelId, Integer year) {
+        return vehicleRepository.findByModelIdAndYear(modelId, year)
+                .map(Vehicle::getId)
+                .orElseThrow(() -> new EntityNotFoundException("Vehicle not found in catalog for model ID: " + modelId + " and year: " + year));
     }
 
     @Override

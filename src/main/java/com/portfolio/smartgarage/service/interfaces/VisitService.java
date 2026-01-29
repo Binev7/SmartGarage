@@ -12,7 +12,7 @@ import java.util.Map;
 
 public interface VisitService {
 
-    VisitViewDto createVisit(CreateVisitDto dto);
+    VisitViewDto createVisit(CreateVisitDto dto, Long userId);
 
     List<VisitViewDto> getVisitsByUser(Long userId, Long vehicleId);
 

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smart Garage | Book Service</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+    <style>
+        .date-card {
+            background: #1a1a1a; border: 1px solid #333; cursor: pointer; transition: 0.3s;
+            padding: 15px; text-align: center;
+        }
+        .date-card:hover:not(.disabled) { border-color: #ff6600; transform: translateY(-3px); }
+        .date-card.selected { background: #ff6600 !important; border-color: #ff6600; color: #000 !important; }
+        .date-card.selected small, .date-card.selected strong { color: #000 !important; }
+        .date-card.disabled { opacity: 0.3; cursor: not-allowed; border-color: #222; background: #000; }
+        .radio-hidden { position: absolute; opacity: 0; pointer-events: none; }
+        .text-orange { color: #ff6600; }
+    </style>
+</head>
+<body class="bg-dark text-white">
+<div th:replace="~{fragments/common :: navbar-customer}"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h2 class="fw-bold mb-2 text-uppercase">Book <span class="text-orange">Service</span></h2>
+            <p class="text-secondary mb-5">Vehicle: <span class="text-white fw-bold" th:text="${vehicle.brandName + ' ' + vehicle.modelName}">BMW M5</span></p>
+
+            <form th:action="@{/customer/visits/book}" th:object="${visitDto}" method="POST">
+
+                <input type="hidden" th:field="*{userId}">
+                <input type="hidden" th:field="*{vehicleId}">
+
+                <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger rounded-0 small mb-4">
+                    <ul class="mb-0">
+                        <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+                    </ul>
+                </div>
+
+                <h5 class="fw-bold mb-3 mt-5 text-uppercase">1. Select Date</h5>
+                <div class="row row-cols-2 row-cols-md-4 row-cols-lg-7 g-3 mb-5">
+                    <div th:each="entry : ${availability}" class="col">
+                        <label th:with="isFull=${entry.value == '0'}" class="w-100 m-0">
+                            <input type="radio" th:field="*{date}"
+                                   th:value="${#temporals.format(entry.key, 'yyyy-MM-dd') + 'T00:00:00'}"
+                                   class="radio-hidden" th:disabled="${isFull}">
+
+                            <div class="date-card h-100" th:classappend="${isFull} ? 'disabled' : ''" onclick="selectDate(this)">
+                                <small class="d-block text-uppercase fw-bold" th:text="${#temporals.format(entry.key, 'EEE')}">Mon</small>
+                                <strong class="fs-3 d-block my-1" th:text="${#temporals.format(entry.key, 'dd')}">28</strong>
+                                <small class="d-block opacity-75" th:text="${#temporals.format(entry.key, 'MMM')}">Jan</small>
+                                <div class="mt-2">
+                                    <span th:if="${!isFull}" class="badge bg-dark text-orange border border-warning" style="font-size: 0.6rem;">OPEN</span>
+                                    <span th:if="${isFull}" class="badge bg-danger text-white" style="font-size: 0.6rem;">FULL</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <h5 class="fw-bold mb-3 text-uppercase">2. Additional Comments</h5>
+                <div class="mb-4">
+                    <textarea th:field="*{additionalComments}"
+                              class="form-control bg-dark text-white border-secondary rounded-0 p-3"
+                              rows="4"
+                              placeholder="Describe what needs to be done..."></textarea>
+                    <div class="text-danger small mt-2" th:if="${#fields.hasErrors('additionalComments')}" th:errors="*{additionalComments}"></div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-4 border-top border-secondary">
+                    <a th:href="@{/customer/dashboard}" class="text-secondary text-decoration-none fw-bold small">← CANCEL</a>
+                    <button type="submit" class="btn btn-orange px-5 py-3 fw-bold">CONFIRM BOOKING</button>
+                </div>
+
+            </form> </div>
+    </div>
+</div>
+
+<script>
+    function selectDate(element) {
+        if (!element.classList.contains('disabled')) {
+            document.querySelectorAll('.date-card').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+            const radio = element.parentElement.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+        }
+    }
+</script>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+</body>
+</html>

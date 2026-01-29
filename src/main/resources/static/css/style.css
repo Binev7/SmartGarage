@@ -41,3 +41,61 @@ body {
     text-transform: uppercase;
     font-size: 0.9rem;
 }
+
+/* Персонализирани стилове за Smart Garage */
+.garage-card {
+    background: #161616;
+    border: 1px solid #2a2a2a;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+
+.garage-card:hover {
+    border-color: #ff6600;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(255, 102, 0, 0.2);
+}
+
+.step-indicator {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    color: #ff6600;
+}
+
+.btn-orange {
+    background-color: #ff6600;
+    color: #000;
+    font-weight: 700;
+    border-radius: 0;
+    transition: 0.3s;
+}
+
+.btn-orange:hover {
+    background-color: #e65c00;
+    color: #000;
+}
+
+/* В style.css */
+.navbar { padding: 15px 0; background-color: rgba(11, 11, 11, 0.95) !important; backdrop-filter: blur(10px); }
+.nav-link { color: #ccc !important; font-weight: 500; text-transform: uppercase; font-size: 0.9rem; transition: 0.3s; }
+.nav-link:hover, .nav-link.active { color: #ff6600 !important; }
+.dropdown-item:hover { background-color: #ff6600; color: #000; }
+.bg-orange { background-color: #ff6600; }
+
+/* Profile avatar initial (used in navbar) */
+.profile-initial {
+    width: 40px;
+    height: 40px;
+    font-weight: 600;
+    border: 2px solid #ff6600;
+    font-size: 1rem;
+}
+
+/* Truncate long names beside the avatar */
+.profile-name {
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

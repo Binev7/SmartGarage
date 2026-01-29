@@ -19,5 +19,4 @@ public class VisitAdminReportDto extends VisitViewDto {
 
     private Long clientVehicleId;
     private String vehicleVin;
-    private int vehicleYear;
 }

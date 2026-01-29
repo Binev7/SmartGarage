@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smart Garage | Step 3</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+</head>
+<body class="bg-dark text-white">
+<div th:replace="~{fragments/common :: navbar-customer}"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="text-center mb-4">
+                <span class="step-indicator fw-bold text-uppercase"
+                      style="letter-spacing: 2px; color: #ff6600; font-size: 0.8rem;">Step 3 of 3</span>
+                <h1 class="fw-bold text-white">VEHICLE <span style="color: #ff6600;">INFO</span></h1>
+            </div>
+
+            <div class="card bg-dark border-0 p-4 shadow-lg" style="background: #161616 !important;">
+                <form th:action="@{/customer/vehicles/add}" th:object="${vehicleRequest}" method="POST">
+                    <input type="hidden" th:field="*{vehicleId}">
+
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small fw-bold">LICENSE PLATE</label>
+                        <input type="text" th:field="*{licensePlate}"
+                               class="form-control bg-black text-white border-secondary rounded-0 p-3"
+                               placeholder="e.g. CB1234AB" required>
+                        <div class="text-danger small mt-2" th:if="${#fields.hasErrors('licensePlate')}" th:errors="*{licensePlate}"></div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-secondary small fw-bold">VIN (VEHICLE ID NUMBER)</label>
+                        <input type="text" th:field="*{vin}"
+                               class="form-control bg-black text-white border-secondary rounded-0 p-3"
+                               placeholder="17 characters" required>
+                        <div class="text-danger small mt-2" th:if="${#fields.hasErrors('vin')}" th:errors="*{vin}"></div>
+                    </div>
+
+                    <div th:if="${error}" class="alert alert-danger rounded-0 small mb-3" th:text="${error}"></div>
+
+                    <button type="submit" class="btn btn-orange w-100 py-3 fw-bold text-uppercase">
+                        Complete Registration
+                    </button>
+                </form>
+            </div>
+
+            <div class="text-center mt-5">
+                <a th:href="@{/customer/vehicles/add/step1}" class="btn btn-outline-secondary btn-sm rounded-0">
+                    ← BACK TO BRANDS
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+</body>
+</html>

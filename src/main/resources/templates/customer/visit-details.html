@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smart Garage | Visit Details</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+    <style>
+        .info-box { background: #161616; border: 1px solid #2a2a2a; padding: 25px; }
+        .service-item { border-bottom: 1px solid #2a2a2a; padding: 15px 0; }
+        .service-item:last-child { border-bottom: none; }
+        .status-banner { padding: 10px 20px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .bg-pending { background: #ffc107; color: #000; }
+        .bg-completed { background: #198754; color: #fff; }
+        .bg-progress { background: #0dcaf0; color: #000; }
+    </style>
+</head>
+<body class="bg-dark text-white">
+<div th:replace="~{fragments/common :: navbar-customer}"></div>
+
+<div class="container py-5">
+    <a th:href="@{/customer/dashboard}" class="btn btn-link text-secondary text-decoration-none p-0 mb-4">
+        <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+    </a>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="info-box shadow-lg mb-4">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <span class="text-orange fw-bold small text-uppercase">Service Record #<span th:text="${visit.id}"></span></span>
+                        <h2 class="fw-bold text-white mt-1" th:text="${visit.vehicleBrand + ' ' + visit.vehicleModel}">BMW M5</h2>
+                        <p class="text-secondary font-monospace" th:text="${visit.vehicleLicensePlate}">CB1234AB</p>
+                    </div>
+                    <div class="text-end">
+                        <div class="status-banner"
+                             th:classappend="${visit.status.name() == 'COMPLETED' ? 'bg-completed' : (visit.status.name() == 'PENDING' ? 'bg-pending' : 'bg-progress')}"
+                             th:text="${visit.status}">PENDING</div>
+                        <p class="mt-2 text-secondary small" th:text="${#temporals.format(visit.date, 'dd MMM yyyy, HH:mm')}">28 Jan 2026</p>
+                    </div>
+                </div>
+
+                <h5 class="fw-bold mb-3 border-bottom border-secondary pb-2 text-uppercase small">Services Performed / Requested</h5>
+                <div th:each="s : ${visit.services}" class="service-item d-flex justify-content-between">
+                    <span class="text-light" th:text="${s.name}">Oil Change</span>
+                    <span class="fw-bold" th:text="${s.price + ' BGN'}">50.00 BGN</span>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4 pt-3 border-top border-orange">
+                    <h4 class="fw-bold">TOTAL AMOUNT</h4>
+                    <h4 class="text-orange fw-bold" th:text="${visit.totalPrice + ' BGN'}">150.00 BGN</h4>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h5 class="fw-bold mb-3 text-uppercase small text-secondary">Additional Comments</h5>
+                <p class="m-0 text-light italic" th:text="${(visit.additionalComments == null || visit.additionalComments == '') ? 'No additional notes provided.' : visit.additionalComments}">
+                    Please check the brakes too.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="info-box border-orange">
+                <h5 class="fw-bold mb-3">MANAGE APPOINTMENT</h5>
+                <p class="small text-secondary mb-4">You can cancel your appointment as long as it is still in 'PENDING' status.</p>
+
+                <div th:if="${visit.status.name() != 'COMPLETED'}">
+                    <button class="btn btn-outline-danger w-100 rounded-0 py-2 fw-bold"
+                            data-bs-toggle="modal" data-bs-target="#cancelModal">
+                        CANCEL VISIT
+                    </button>
+                </div>
+
+                <div th:if="${visit.status.name() == 'COMPLETED'}" class="alert alert-success bg-dark text-success border-success rounded-0 small">
+                    <i class="bi bi-check-circle-fill me-2"></i> This service is completed.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-black border border-secondary text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fw-bold">Confirm Cancellation</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-secondary">
+                Are you sure you want to cancel your service appointment for
+                <strong class="text-white" th:text="${visit.vehicleBrand}">Car</strong>?
+                This action will remove the reserved time slot.
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Go Back</button>
+                <form th:action="@{/customer/visits/cancel/{id}(id=${visit.id})}" method="POST">
+                    <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn btn-danger rounded-0 px-4">Yes, Cancel Appointment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+</body>
+</html>

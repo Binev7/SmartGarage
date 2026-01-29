@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smart Garage | Step 2: Services</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+    <style>
+        .service-card {
+            background: #1a1a1a; border: 1px solid #333; cursor: pointer; transition: 0.2s;
+            position: relative;
+        }
+        .service-card:hover { border-color: #ff6600; background: #222; }
+        .service-card.selected { border-color: #ff6600; background: #261a15; }
+        .text-orange { color: #ff6600; }
+        .btn-orange { background-color: #ff6600; color: #000; border: none; }
+        .form-check-input:checked { background-color: #ff6600; border-color: #ff6600; }
+    </style>
+</head>
+<body class="bg-dark text-white">
+<div th:replace="~{fragments/common :: navbar-customer}"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center text-center mb-5">
+        <div class="col-lg-8">
+            <span class="text-orange fw-bold small text-uppercase">Step 2 of 3</span>
+            <h2 class="fw-bold text-uppercase">Select <span class="text-orange">Services</span></h2>
+            <p class="text-secondary small">Date: <span th:text="${#strings.replace(selectedDate, 'T', ' ')}"></span></p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <form th:action="@{/customer/visits/book/step3}" method="GET" id="servicesForm">
+                <input type="hidden" name="vehicleId" th:value="${clientVehicleId}">
+                <input type="hidden" name="date" th:value="${selectedDate}">
+
+                <div class="row g-3 mb-5">
+                    <div th:each="service : ${allServices}" class="col-md-6">
+                        <div class="p-3 service-card h-100 d-flex justify-content-between align-items-center"
+                             onclick="toggleService(this)">
+                            <div class="form-check m-0">
+                                <input class="form-check-input" type="checkbox"
+                                       name="serviceIds"
+                                       th:value="${service.id}"
+                                       th:id="${'s' + service.id}"
+                                       style="pointer-events: none;">
+                                <label class="form-check-label fw-bold ms-2"
+                                       th:for="${'s' + service.id}"
+                                       th:text="${service.name}"
+                                       style="pointer-events: none;">Oil Change</label>
+                            </div>
+                            <span class="text-orange fw-bold" th:text="${service.price + ' BGN'}">50.00 BGN</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between pt-4 border-top border-secondary">
+                    <button type="button" onclick="history.back()" class="btn btn-link text-secondary text-decoration-none p-0">← Back</button>
+                    <button type="submit" class="btn btn-orange px-5 py-3 fw-bold rounded-0 text-uppercase">Next: Final Details →</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleService(card) {
+        const checkbox = card.querySelector('input[type="checkbox"]');
+        checkbox.checked = !checkbox.checked;
+
+        if (checkbox.checked) {
+            card.classList.add('selected');
+        } else {
+            card.classList.remove('selected');
+        }
+    }
+
+    document.getElementById('servicesForm').onsubmit = function(e) {
+        const checked = document.querySelectorAll('input[name="serviceIds"]:checked');
+        if (checked.length === 0) {
+            alert("Please select at least one service.");
+            return false;
+        }
+    };
+</script>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+</body>
+</html>

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Long>, JpaSpecificationExecutor<Vehicle> {
@@ -24,4 +25,6 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long>, JpaSpec
     @Transactional
     @Query("UPDATE Vehicle v SET v.active = false WHERE v.model.id = :modelId")
     void deactivateAllByModelId(@Param("modelId") Long modelId);
+
+    Optional<Vehicle> findByModelIdAndYear(Long modelId, Integer year);
 }

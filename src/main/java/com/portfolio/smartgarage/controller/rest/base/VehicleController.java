@@ -79,7 +79,9 @@ public class VehicleController {
     public ResponseEntity<Void> deleteVehicle(
             @Parameter(description = "ID of the vehicle to delete") @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        clientVehicleService.deleteVehicle(id, userDetails.getUser());
+
+        clientVehicleService.deleteVehicle(id, userDetails.getId());
+
         return ResponseEntity.noContent().build();
     }
 }

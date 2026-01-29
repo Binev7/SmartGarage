@@ -25,5 +25,5 @@ public interface ClientVehicleService {
 
     List<ClientVehicleResponseDto> getMyVehicles(Long userId);
 
-    void deleteVehicle(Long id, User user);
+    void deleteVehicle(Long id, Long currentUserId);
 }

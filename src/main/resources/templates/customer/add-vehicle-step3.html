@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smart Garage | Select Year</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+    <style>
+        .year-card {
+            background: #1a1a1a; border: 1px solid #333; cursor: pointer; transition: 0.3s;
+            padding: 20px; text-align: center; font-size: 1.5rem; font-weight: bold;
+        }
+        .year-card:hover { border-color: #ff6600; background: #222; color: #ff6600; }
+    </style>
+</head>
+<body class="bg-dark text-white">
+<div th:replace="~{fragments/common :: navbar-customer}"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center text-center mb-5">
+        <div class="col-lg-8">
+            <span class="text-orange fw-bold small">STEP 3 OF 4</span>
+            <h2 class="fw-bold text-uppercase">Select <span class="text-orange">Manufacturing Year</span></h2>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="row row-cols-2 row-cols-md-4 g-3">
+                <div th:each="year : ${years}" class="col">
+                    <a th:href="@{/customer/vehicles/add/step4(modelId=${modelId}, year=${year})}"
+                       class="text-decoration-none text-white">
+                        <div class="year-card rounded-0">
+                            <span th:text="${year}">2020</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <a href="javascript:history.back()" class="text-secondary text-decoration-none">← Back to Models</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+</body>
+</html>
