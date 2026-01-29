@@ -40,7 +40,7 @@ public class AuthControllerMvc {
     @GetMapping("/auth/login")
     public String getLoginPage(@RequestParam(value = "error", required = false) String errorParam,
                                Model model) {
-        // Ако Spring Security ни препрати тук с ?error
+
         if (errorParam != null) {
             model.addAttribute("error", "Invalid email or password.");
         }
@@ -67,7 +67,6 @@ public class AuthControllerMvc {
             return "redirect:/auth/home";
 
         } catch (Exception e) {
-            // ТУК използваме Model, защото ВРЪЩАМЕ VIEW (не е redirect)
             model.addAttribute("error", "Invalid email or password. Please try again.");
             return "auth/login";
         }
@@ -92,7 +91,6 @@ public class AuthControllerMvc {
 
         try {
             authService.register(request);
-            // Пренасочваме с параметър - това работи с th:if="${param.registered}"
             return "redirect:/auth/login?registered=true";
 
         } catch (Exception e) {
@@ -111,7 +109,6 @@ public class AuthControllerMvc {
                                        RedirectAttributes redirectAttributes) {
         try {
             authService.forgotPassword(email);
-            // ПОПРАВКА: Използваме FlashAttribute за пренос на съобщение при Redirect
             redirectAttributes.addFlashAttribute("message", "A reset link has been sent to your email.");
             return "redirect:/auth/forgot-password";
         } catch (Exception e) {
