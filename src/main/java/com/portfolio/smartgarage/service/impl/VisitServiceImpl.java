@@ -43,28 +43,29 @@ public class VisitServiceImpl implements VisitService {
     @Override
     @Transactional
     public VisitViewDto createVisit(CreateVisitDto dto, Long userId) {
-        // 1. Валидация на дневния лимит (бизнес правило)
         visitValidator.validateDailyLimit(
                 dto.getDate().toLocalDate(),
                 BaseConstants.MAX_DAILY_VISITS
         );
 
-        // 2. Намиране на автомобила
         ClientVehicle vehicle = clientVehicleRepository.findById(dto.getClientVehicleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
 
-        // 3. Сигурност: Проверка на собственост
         if (!vehicle.getOwner().getId().equals(userId)) {
             throw new AccessDeniedException("You are not the owner of this vehicle.");
         }
 
-        // 4. ДЕЛЕГИРАНЕ: CreateAndSaveHelper поема намирането на услуги,
-        // изчисляването на тотал и записа в базата.
         Visit savedVisit = createAndSaveHelper.createAndSaveVisit(dto, vehicle);
 
-        // 5. ДЕЛЕГИРАНЕ: VisitHelper поема мапването към DTO и
-        // настройването на базовата валута (BGN).
         return visitHelper.mapWithCurrency(savedVisit, null);
+    }
+
+    @Override
+    public List<VisitViewDto> getAllVisits() {
+        return visitRepository.findAll().stream()
+                .sorted((v1, v2) -> v2.getDate().compareTo(v1.getDate()))
+                .map(visitMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -75,6 +76,8 @@ public class VisitServiceImpl implements VisitService {
                 BaseConstants.MAX_DAILY_VISITS
         );
     }
+
+    
 
     @Override
     @Transactional
@@ -113,7 +116,6 @@ public class VisitServiceImpl implements VisitService {
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new ResourceNotFoundException("Visit record not found."));
 
-        // Ползваме стандартния toDto за клиенти
         VisitViewDto dto = visitMapper.toDto(visit);
         return visitHelper.applyCurrency(dto, visit.getTotalPrice(), currency);
     }

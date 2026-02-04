@@ -1,9 +1,11 @@
 package com.portfolio.smartgarage.helper.util;
 
+import com.portfolio.smartgarage.dto.vehicle.*;
 import com.portfolio.smartgarage.dto.visit.CreateVisitDto;
 import com.portfolio.smartgarage.dto.visit.NewCustomerVisitDto;
+import com.portfolio.smartgarage.exception.ResourceAlreadyExistsException;
 import com.portfolio.smartgarage.exception.ResourceNotFoundException;
-import com.portfolio.smartgarage.helper.mapper.VisitMapper;
+import com.portfolio.smartgarage.helper.mapper.*;
 import com.portfolio.smartgarage.model.*;
 import com.portfolio.smartgarage.repository.*;
 import com.portfolio.smartgarage.service.interfaces.EmailService;
@@ -26,10 +28,65 @@ public class CreateAndSaveHelper {
     private final VehicleRepository vehicleRepository;
     private final ClientVehicleRepository clientVehicleRepository;
     private final VisitRepository visitRepository;
-    private final VisitMapper visitMapper;
     private final ServiceRepository serviceRepository;
-    private final EmailService emailService;
+    private final BrandRepository brandRepository;
+    private final ModelRepository modelRepository;
 
+    private final VisitMapper visitMapper;
+    private final BrandMapper brandMapper;
+    private final ModelMapper modelMapper;
+    private final VehicleMapper vehicleMapper;
+
+    private  final EmailService emailService;
+
+
+    public Brand findOrCreateBrand(BrandRequestDto dto) {
+        return brandRepository.findByNameIgnoreCase(dto.getName())
+                .map(existing -> {
+                    if (existing.isActive()) {
+                        throw new ResourceAlreadyExistsException("Brand already exists and is active.");
+                    }
+                    existing.setActive(true);
+                    return brandRepository.save(existing);
+                })
+                .orElseGet(() -> {
+                    Brand brand = brandMapper.toEntity(dto);
+                    brand.setActive(true);
+                    return brandRepository.save(brand);
+                });
+    }
+
+    public Model findOrCreateModel(ModelRequestDto dto, Brand brand) {
+        return modelRepository.findByNameAndBrandId(dto.getName(), brand.getId())
+                .map(existing -> {
+                    if (existing.isActive()) {
+                        throw new ResourceAlreadyExistsException("Model already exists and is active for this brand.");
+                    }
+                    existing.setActive(true);
+                    return modelRepository.save(existing);
+                })
+                .orElseGet(() -> {
+                    Model model = modelMapper.toEntity(dto, brand);
+                    model.setActive(true);
+                    return modelRepository.save(model);
+                });
+    }
+
+    public Vehicle findOrCreateVehicle(VehicleCatalogDto dto, Model model) {
+        return vehicleRepository.findByModelIdAndYear(model.getId(), dto.getYear())
+                .map(existing -> {
+                    if (existing.isActive()) {
+                        throw new ResourceAlreadyExistsException("This model year is already active in catalog.");
+                    }
+                    existing.setActive(true);
+                    return vehicleRepository.save(existing);
+                })
+                .orElseGet(() -> {
+                    Vehicle vehicle = vehicleMapper.toEntity(dto, model);
+                    vehicle.setActive(true);
+                    return vehicleRepository.save(vehicle);
+                });
+    }
 
     public Visit createAndSaveVisit(CreateVisitDto dto, ClientVehicle vehicle) {
         Visit visit = visitMapper.toEntity(dto);
@@ -58,7 +115,6 @@ public class CreateAndSaveHelper {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                 @Override
                 public void afterCommit() {
-                    // Имейлът ще се изпрати само ако всичко в базата е записано успешно
                     emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getFirstName(), rawPassword);
                 }
             });
