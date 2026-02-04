@@ -1,16 +1,17 @@
-# 1. Използваме Maven image, за да компилираме проекта (Build Stage)
+# 1. Build Stage (Тук компилираме)
 FROM maven:3.8.5-openjdk-17 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-# 2. Използваме лек Java image, за да пуснем приложението (Run Stage)
-FROM openjdk:17-jdk-slim
+# 2. Run Stage (Тук е поправката!)
+# Сменяме 'openjdk:17-jdk-slim' с 'eclipse-temurin:17-jdk-jammy'
+FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
 # Копираме готовия JAR файл от първата стъпка
 COPY --from=build /app/target/*.jar app.jar
 
-# Отваряме порт 8080 (стандартния за Spring Boot)
+# Отваряме порт 8080
 EXPOSE 8080
 
 # Стартираме приложението
