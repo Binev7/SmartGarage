@@ -1,23 +1,22 @@
-# 1. Build Stage
-FROM maven:3.8.5-openjdk-17 AS build
+# 1. Build Stage (Използваме Java, за да пуснем Gradle)
+FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /app
 
-# СТЪПКА А: Копираме САМО pom.xml първо.
-# Ако файлът липсва в GitHub, Docker ще спре ТУК с грешка "failed to copy".
-COPY pom.xml .
+# Копираме всички файлове
+COPY . .
 
-# СТЪПКА Б: Сваляме библиотеките (това прави build-а по-бърз следващия път)
-RUN mvn dependency:go-offline -B
+# Даваме права за изпълнение на "gradlew" (важно за Linux/Render)
+RUN chmod +x gradlew
 
-# СТЪПКА В: Копираме останалия код (src)
-COPY src ./src
+# Стартираме build процеса с Gradle (вместо Maven)
+RUN ./gradlew clean build -x test
 
-# СТЪПКА Г: Компилираме
-RUN mvn clean package -DskipTests
-
-# 2. Run Stage
+# 2. Run Stage (Стартиране)
 FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+
+# При Gradle готовите файлове са в папка build/libs/
+COPY --from=build /app/build/libs/*.jar app.jar
+
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
