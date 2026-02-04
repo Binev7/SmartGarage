@@ -34,6 +34,7 @@ public class VisitMapper {
                 .date(visit.getDate())
                 .status(visit.getStatus())
                 .additionalComments(visit.getAdditionalComments())
+                .ownerName(visit.getUser().getFirstName() + " " + visit.getUser().getLastName())
 
                 .vehicleBrand(visit.getClientVehicle().getVehicle().getModel().getBrand().getName())
                 .vehicleModel(visit.getClientVehicle().getVehicle().getModel().getName())
