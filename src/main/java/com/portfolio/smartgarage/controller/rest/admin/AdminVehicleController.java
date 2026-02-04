@@ -38,6 +38,24 @@ public class AdminVehicleController {
         return ResponseEntity.ok(clientVehicleService.searchVehicles(criteria, pageable));
     }
 
+    @Operation(summary = "Get models by brand", description = "Fetch all models associated with a specific brand ID.")
+    @GetMapping("/brands/{brandId}/models")
+    public ResponseEntity<List<ModelResponseDto>> getModelsByBrand(@PathVariable Long brandId) {
+        return ResponseEntity.ok(vehicleService.getModelsByBrand(brandId));
+    }
+
+    @Operation(summary = "Get years for model", description = "Fetch all production years available for a specific model ID.")
+    @GetMapping("/models/{modelId}/years")
+    public ResponseEntity<List<Integer>> getYearsByModel(@PathVariable Long modelId) {
+        return ResponseEntity.ok(vehicleService.getAvailableYearsForModel(modelId));
+    }
+
+    @Operation(summary = "Lookup catalog ID", description = "Find the unique catalog ID for a model and year combination.")
+    @GetMapping("/lookup")
+    public ResponseEntity<Long> lookupCatalogId(@RequestParam Long modelId, @RequestParam Integer year) {
+        return ResponseEntity.ok(vehicleService.getVehicleIdByModelAndYear(modelId, year));
+    }
+
     @Operation(summary = "Get client vehicle details", description = "Retrieve full details for a specific client vehicle by its ID.")
     @GetMapping("/{id}")
     public ResponseEntity<ClientVehicleResponseDto> getVehicleDetails(
@@ -94,27 +112,24 @@ public class AdminVehicleController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Archive brand", description = "Deactivate a brand so it can no longer be used for new registrations.")
-    @PatchMapping("/brands/{id}/archive")
-    public ResponseEntity<Void> archiveBrand(
-            @Parameter(description = "ID of the brand to archive") @PathVariable Long id) {
+    @Operation(summary = "Archive brand")
+    @PostMapping("/brands/{id}/archive")
+    public ResponseEntity<Void> archiveBrand(@PathVariable Long id) {
         vehicleService.archiveBrand(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Archive model", description = "Deactivate a specific model.")
-    @PatchMapping("/models/{id}/archive")
-    public ResponseEntity<Void> archiveModel(
-            @Parameter(description = "ID of the model to archive") @PathVariable Long id) {
+    @Operation(summary = "Archive model")
+    @PostMapping("/models/{id}/archive")
+    public ResponseEntity<Void> archiveModel(@PathVariable Long id) {
         vehicleService.archiveModel(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Archive catalog entry", description = "Deactivate a specific vehicle entry from the general catalog.")
-    @PatchMapping("/catalog/{id}/archive")
-    public ResponseEntity<Void> archiveCatalogEntry(
-            @Parameter(description = "ID of the catalog entry to archive") @PathVariable Long id) {
+    @Operation(summary = "Archive catalog entry")
+    @PostMapping("/catalog/{id}/archive")
+    public ResponseEntity<Void> archiveCatalogEntry(@PathVariable Long id) {
         vehicleService.archiveVehicleFromCatalog(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }
