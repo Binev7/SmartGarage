@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smart Garage | Client Vehicles</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+    <style>
+        .search-card { background: #111; border: 1px solid #333; padding: 20px; margin-bottom: 30px; }
+        .vehicle-table { background: #161616; border: 1px solid #2a2a2a; }
+        .plate-badge {
+            background: #fff; color: #000; font-family: 'Courier New', monospace;
+            font-weight: 800; border: 2px solid #000; padding: 2px 8px;
+            border-radius: 4px; box-shadow: 2px 2px 0px #ff6600;
+        }
+        /* Стилове за Alert съобщенията */
+        .alert-success { background-color: #198754; color: white; border: none; }
+        .alert-danger { background-color: #dc3545; color: white; border: none; }
+    </style>
+</head>
+<body class="bg-dark text-white">
+<div th:replace="~{fragments/common :: navbar-admin}"></div>
+
+<main class="container-fluid py-5 mt-5 px-4">
+    <div class="mb-5">
+        <h2 class="fw-bold text-uppercase m-0">Client <span class="text-orange">Vehicles</span></h2>
+        <p class="text-secondary small">Database of all registered customer vehicles.</p>
+    </div>
+
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show rounded-0 shadow mb-4" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <strong th:text="${message}"></strong>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show rounded-0 shadow mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <strong th:text="${error}"></strong>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="search-card shadow">
+        <form th:action="@{/employee/client-vehicles}" th:object="${searchCriteria}" method="get" class="row g-3">
+            <div class="col-md-2">
+                <label class="small text-secondary">License Plate</label>
+                <input type="text" th:field="*{licensePlate}" class="form-control form-control-sm bg-black text-white border-secondary">
+            </div>
+            <div class="col-md-2">
+                <label class="small text-secondary">VIN Number</label>
+                <input type="text" th:field="*{vin}" class="form-control form-control-sm bg-black text-white border-secondary">
+            </div>
+            <div class="col-md-2">
+                <label class="small text-secondary">Owner Name</label>
+                <input type="text" th:field="*{ownerName}" class="form-control form-control-sm bg-black text-white border-secondary">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-orange btn-sm w-100 fw-bold">FILTER</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-dark table-hover vehicle-table align-middle">
+            <thead class="bg-black text-orange">
+            <tr>
+                <th class="ps-4">License Plate</th>
+                <th>Model Info</th>
+                <th>Owner</th>
+                <th>Registered At</th>
+                <th class="text-end pe-4">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="v : ${vehicles}" class="border-secondary">
+                <td class="ps-4">
+                    <span class="plate-badge" th:text="${v.licensePlate}"></span>
+                </td>
+                <td>
+                    <span class="d-block fw-bold" th:text="${v.brandName + ' ' + v.modelName}"></span>
+                    <small class="text-secondary" th:text="'Year: ' + ${v.year} + ' | VIN: ' + ${v.vin}"></small>
+                </td>
+                <td>
+                    <span class="d-block text-white fw-bold"
+                          th:text="${v.ownerFirstName + ' ' + v.ownerLastName}"></span>
+                    <small class="text-secondary" th:text="${v.ownerEmail}"></small>
+                </td>
+                <td class="text-secondary small" th:text="${#temporals.format(v.registeredAt, 'dd MMM yyyy')}"></td>
+                <td class="text-end pe-4">
+                    <div class="btn-group">
+                        <a th:href="@{/employee/client-vehicles/edit/{id}(id=${v.id})}" class="btn btn-sm btn-outline-light rounded-0">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a th:href="@{/employee/dashboard(licensePlate=${v.licensePlate})}" class="btn btn-sm btn-outline-orange rounded-0">
+                            <i class="bi bi-clock-history"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(vehicles)}">
+                <td colspan="5" class="text-center py-5">No vehicles found.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+</body>
+</html>

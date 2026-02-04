@@ -14,6 +14,8 @@ public interface VisitService {
 
     VisitViewDto createVisit(CreateVisitDto dto, Long userId);
 
+    List<VisitViewDto> getAllVisits();
+
     List<VisitViewDto> getVisitsByUser(Long userId, Long vehicleId);
 
     VisitViewDto getVisitDetails(Long visitId, String currency);

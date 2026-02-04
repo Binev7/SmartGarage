@@ -19,10 +19,14 @@ public class ClientVehicleSpecifications {
     public static Specification<ClientVehicle> hasOwnerName(String name) {
         return (root, query, cb) -> {
             if (name == null || name.isEmpty()) return null;
+
             Join<ClientVehicle, User> ownerJoin = root.join("owner");
+            String pattern = "%" + name.toLowerCase() + "%";
+
             return cb.or(
-                    cb.like(cb.lower(ownerJoin.get("firstName")), "%" + name.toLowerCase() + "%"),
-                    cb.like(cb.lower(ownerJoin.get("lastName")), "%" + name.toLowerCase() + "%")
+                    cb.like(cb.lower(ownerJoin.get("firstName")), pattern),
+                    cb.like(cb.lower(ownerJoin.get("lastName")), pattern),
+                    cb.like(cb.lower(ownerJoin.get("username")), pattern)
             );
         };
     }

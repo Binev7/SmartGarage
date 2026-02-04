@@ -115,27 +115,20 @@ public class ClientVehicleServiceImpl implements ClientVehicleService {
                 .collect(Collectors.toList());
     }
 
-    // В ClientVehicleServiceImpl.java
     @Override
     @Transactional
     public void deleteVehicle(Long id, Long currentUserId) {
-        // 1. Намираме колата
         ClientVehicle vehicle = clientVehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
 
-        // 2. Сравняваме ID-тата директно (избягваме проблеми с цели обекти)
         if (!vehicle.getOwner().getId().equals(currentUserId)) {
             throw new AccessDeniedException("You do not have permission to delete this vehicle.");
         }
 
-        // 3. Валидация (ако има активни часове, които не могат да се трият)
         vehicleValidator.validateDeletionAllowed(vehicle);
 
-        // 4. ПЪРВО ТРИЕМ ВИЗИТИТЕ (заради Foreign Key ограниченията)
-        // Увери се, че това трие и записите в свързващата таблица visit_services!
         visitRepository.deleteAllByClientVehicleId(id);
 
-        // 5. НАКРАЯ ТРИЕМ КОЛАТА
         clientVehicleRepository.delete(vehicle);
     }
 

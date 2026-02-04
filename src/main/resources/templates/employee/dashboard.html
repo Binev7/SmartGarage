@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Smart Garage | Staff Dashboard</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+    <style>
+        .admin-table { background: #161616; border: 1px solid #2a2a2a; }
+        .admin-table thead { background: #000; color: #ff6600; text-transform: uppercase; font-size: 0.85rem; }
+        .status-badge { font-size: 0.7rem; letter-spacing: 1px; padding: 6px 12px; font-weight: 800; }
+        .comment-popover { cursor: help; color: #ff6600; }
+
+        .bg-pending { background-color: #ffc107; color: #000; }
+        .bg-approved { background-color: #0d6efd; color: #fff; }
+        .bg-rejected { background-color: #dc3545; color: #fff; }
+        .bg-completed { background-color: #198754; color: #fff; }
+
+        .dropdown-item { font-size: 0.85rem; transition: 0.2s; }
+        .dropdown-item:hover { background-color: #ff6600 !important; color: #000 !important; }
+        .btn-delete-record { color: #dc3545; opacity: 0.6; font-size: 0.75rem; }
+        .btn-delete-record:hover { opacity: 1; color: #ff4d4d; background: transparent; }
+    </style>
+</head>
+<body class="bg-dark text-white">
+
+<div th:replace="~{fragments/common :: navbar-admin}"></div>
+
+<main class="container py-5 mt-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h1 class="fw-bold text-uppercase m-0">Staff <span class="text-orange">Dashboard</span></h1>
+            <p class="text-secondary small mb-0">Manage service lifecycle: Pending → Approved/Rejected → Completed.</p>
+        </div>
+        <a th:href="@{/templates/employee/visits/new-customer}" class="btn btn-orange px-4 py-2 fw-bold rounded-0 shadow">
+            <i class="bi bi-person-plus-fill me-2"></i> NEW CUSTOMER VISIT
+        </a>
+    </div>
+
+    <div th:if="${message}" class="alert alert-success bg-dark text-success border-success rounded-0 mb-4 shadow-sm" th:text="${message}"></div>
+    <div th:if="${error}" class="alert alert-danger bg-dark text-danger border-danger rounded-0 mb-4 shadow-sm" th:text="${error}"></div>
+
+    <div class="table-responsive shadow-lg">
+        <table class="table table-dark table-hover admin-table mb-0">
+            <thead>
+            <tr>
+                <th class="py-3 px-4 border-0">Visit Date</th>
+                <th class="py-3 border-0">Customer</th>
+                <th class="py-3 border-0">Vehicle Info</th>
+                <th class="py-3 border-0">Status</th>
+                <th class="py-3 text-end px-4 border-0">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="v : ${visits}" class="align-middle border-secondary">
+                <td class="px-4 border-secondary">
+                    <span class="d-block fw-bold text-white" th:text="${#temporals.format(v.date, 'dd MMM yyyy')}"></span>
+                    <small class="text-secondary" th:text="${#temporals.format(v.date, 'HH:mm')}"></small>
+                </td>
+
+                <td class="border-secondary">
+                    <span class="fw-bold" th:text="${v.ownerName}">Ivan Ivanov</span>
+                    <i th:if="${v.additionalComments != null and !v.additionalComments.isEmpty()}"
+                       class="bi bi-chat-left-text-fill ms-2 comment-popover"
+                       th:title="${v.additionalComments}"
+                       data-bs-toggle="tooltip"></i>
+                </td>
+
+                <td class="border-secondary">
+                    <span class="badge bg-dark border border-secondary text-orange" th:text="${v.vehicleLicensePlate}">CB1234AB</span>
+                    <small class="d-block text-secondary mt-1" th:text="${v.vehicleBrand + ' ' + v.vehicleModel + ' (' + v.vehicleYear + ')'}"></small>
+                </td>
+
+                <td class="border-secondary">
+                    <span class="badge status-badge rounded-0"
+                          th:classappend="${v.status.name() == 'COMPLETED' ? 'bg-completed' :
+                                           (v.status.name() == 'APPROVED' ? 'bg-approved' :
+                                           (v.status.name() == 'REJECTED' ? 'bg-rejected' : 'bg-pending'))}"
+                          th:text="${v.status}">PENDING</span>
+                </td>
+
+                <td class="text-end px-4 border-secondary">
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-light dropdown-toggle rounded-0 px-3" data-bs-toggle="dropdown">
+                            MANAGE
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end border-secondary shadow">
+
+                            <li th:if="${v.status.name() == 'PENDING'}">
+                                <form th:action="@{/templates/employee/visits/{id}/status(id=${v.id})}" method="post">
+                                    <input type="hidden" name="status" value="APPROVED">
+                                    <button class="dropdown-item py-2 text-primary fw-bold">
+                                        <i class="bi bi-check-circle-fill me-2"></i> APPROVE VISIT
+                                    </button>
+                                </form>
+                            </li>
+                            <li th:if="${v.status.name() == 'PENDING'}">
+                                <form th:action="@{/templates/employee/visits/{id}/status(id=${v.id})}" method="post"
+                                      onsubmit="return confirm('REJECT this visit? The customer will be notified via their portal.');">
+                                    <input type="hidden" name="status" value="REJECTED">
+                                    <button class="dropdown-item py-2 text-danger">
+                                        <i class="bi bi-x-circle-fill me-2"></i> REJECT VISIT
+                                    </button>
+                                </form>
+                            </li>
+
+                            <li th:if="${v.status.name() == 'APPROVED'}">
+                                <form th:action="@{/templates/employee/visits/{id}/status(id=${v.id})}" method="post">
+                                    <input type="hidden" name="status" value="COMPLETED">
+                                    <button class="dropdown-item py-2 text-success fw-bold">
+                                        <i class="bi bi-flag-fill me-2"></i> MARK AS COMPLETED
+                                    </button>
+                                </form>
+                            </li>
+
+                            <li><hr class="dropdown-divider bg-secondary opacity-25"></li>
+
+                            <li>
+                                <a th:href="@{/templates/employee/visits/report/{id}(id=${v.id})}" class="dropdown-item py-2">
+                                    <i class="bi bi-file-earmark-bar-graph me-2"></i> View Full Report
+                                </a>
+                            </li>
+
+                            <li>
+                                <form th:action="@{/templates/employee/visits/delete/{id}(id=${v.id})}" method="post"
+                                      onsubmit="return confirm('WARNING: This will permanently DELETE the record. Customers will no longer see it. Continue?');">
+                                    <button class="dropdown-item py-2 btn-delete-record">
+                                        <i class="bi bi-trash3 me-2"></i> Permanent Delete
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(visits)}">
+                <td colspan="5" class="text-center py-5 text-secondary italic">
+                    <i class="bi bi-inbox me-2"></i> No service visits recorded yet.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+<script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+</script>
+</body>
+</html>

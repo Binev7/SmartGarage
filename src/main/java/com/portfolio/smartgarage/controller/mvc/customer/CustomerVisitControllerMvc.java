@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.controller.mvc;
+package com.portfolio.smartgarage.controller.mvc.customer;
 
 import com.portfolio.smartgarage.dto.visit.CreateVisitDto;
 import com.portfolio.smartgarage.helper.constant.BaseConstants;

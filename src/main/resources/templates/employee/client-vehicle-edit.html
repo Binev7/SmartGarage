@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smart Garage | Edit Vehicle</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+    <style>
+        .form-card { background: #111; border: 1px solid #333; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .form-label { color: #aaa; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .form-control, .form-select { background-color: #000 !important; color: #fff !important; border: 1px solid #444; padding: 10px; }
+        .form-control:focus, .form-select:focus { border-color: #ff6600; box-shadow: 0 0 0 0.2rem rgba(255, 102, 0, 0.25); }
+        .text-orange { color: #ff6600 !important; }
+        .btn-orange { background-color: #ff6600; color: #000; font-weight: bold; border: none; padding: 10px 25px; transition: all 0.3s; }
+        .btn-orange:hover { background-color: #cc5200; color: #fff; }
+    </style>
+</head>
+<body class="bg-dark text-white">
+<div th:replace="~{fragments/common :: navbar-admin}"></div>
+
+<main class="container py-5 mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold text-uppercase m-0">Edit <span class="text-orange">Vehicle</span></h2>
+                <a th:href="@{/employee/client-vehicles}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i> Back to List
+                </a>
+            </div>
+
+            <div class="form-card">
+                <form th:action="@{/employee/client-vehicles/edit/{id}(id=${vehicleId})}"
+                      th:object="${vehicleRequest}"
+                      method="post">
+
+                    <div th:if="${error}" class="alert alert-danger rounded-0 mb-4">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${error}"></span>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label">License Plate</label>
+                            <input type="text" th:field="*{licensePlate}"
+                                   class="form-control"
+                                   th:classappend="${#fields.hasErrors('licensePlate')} ? 'is-invalid'"
+                                   placeholder="CB1234AB">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('licensePlate')}" th:errors="*{licensePlate}"></div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">VIN Number</label>
+                            <input type="text" th:field="*{vin}"
+                                   class="form-control"
+                                   th:classappend="${#fields.hasErrors('vin')} ? 'is-invalid'"
+                                   placeholder="17 characters">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('vin')}" th:errors="*{vin}"></div>
+                        </div>
+
+                        <div class="col-12">
+                            <hr class="border-secondary my-4">
+                            <h5 class="text-white mb-3"><i class="bi bi-car-front me-2 text-orange"></i>Catalog Specification</h5>
+                            <p class="text-secondary small">If the model is incorrect, use the dropdowns below to re-assign the vehicle from the catalog.</p>
+                        </div>
+
+                        <input type="hidden" th:field="*{vehicleId}" id="finalCatalogId">
+
+                        <div class="col-md-4">
+                            <label class="form-label">Brand</label>
+                            <select id="brandSelect" class="form-select">
+                                <option value="" selected disabled>Select Brand</option>
+                                <option th:each="brand : ${brands}"
+                                        th:value="${brand.id}"
+                                        th:text="${brand.name}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Model</label>
+                            <select id="modelSelect" class="form-select" disabled>
+                                <option value="" selected disabled>Select Brand First</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Year</label>
+                            <select id="yearSelect" class="form-select" disabled>
+                                <option value="" selected disabled>Select Model First</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <div id="selectionStatus" class="p-2 border border-secondary text-secondary small text-center" style="border-style: dashed !important;">
+                                Current Catalog ID: <span th:text="*{vehicleId}" class="fw-bold text-white"></span> (Change using dropdowns above)
+                            </div>
+                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('vehicleId')}" th:errors="*{vehicleId}"></div>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-orange w-100 py-3 text-uppercase letter-spacing-1">
+                                <i class="bi bi-save me-2"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const brandSelect = document.getElementById('brandSelect');
+        const modelSelect = document.getElementById('modelSelect');
+        const yearSelect = document.getElementById('yearSelect');
+        const finalIdInput = document.getElementById('finalCatalogId');
+        const statusText = document.getElementById('selectionStatus');
+
+        // ВАЖНО: REST контролерът AdminVehicleController е на този адрес
+        const baseUrl = '/api/admin/vehicles';
+
+        brandSelect.addEventListener('change', function() {
+            const brandId = this.value;
+            modelSelect.innerHTML = '<option value="" selected disabled>Loading...</option>';
+            modelSelect.disabled = true;
+            yearSelect.innerHTML = '<option value="" selected disabled>Select Model First</option>';
+            yearSelect.disabled = true;
+
+            fetch(`${baseUrl}/brands/${brandId}/models`)
+                .then(response => response.json())
+                .then(models => {
+                    modelSelect.innerHTML = '<option value="" selected disabled>Select Model</option>';
+                    models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model.id;
+                        option.text = model.name;
+                        modelSelect.appendChild(option);
+                    });
+                    modelSelect.disabled = false;
+                })
+                .catch(err => console.error('Error loading models:', err));
+        });
+
+        modelSelect.addEventListener('change', function() {
+            const modelId = this.value;
+            yearSelect.innerHTML = '<option value="" selected disabled>Loading...</option>';
+            yearSelect.disabled = true;
+
+            fetch(`${baseUrl}/models/${modelId}/years`)
+                .then(response => response.json())
+                .then(years => {
+                    yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>';
+                    years.forEach(year => {
+                        const option = document.createElement('option');
+                        option.value = year;
+                        option.text = year;
+                        yearSelect.appendChild(option);
+                    });
+                    yearSelect.disabled = false;
+                })
+                .catch(err => console.error('Error loading years:', err));
+        });
+
+        yearSelect.addEventListener('change', function() {
+            const modelId = modelSelect.value;
+            const year = this.value;
+
+            statusText.innerHTML = `<span class="spinner-border spinner-border-sm text-orange" role="status"></span> Updating...`;
+
+            fetch(`${baseUrl}/lookup?modelId=${modelId}&year=${year}`)
+                .then(response => response.json())
+                .then(catalogId => {
+                    finalIdInput.value = catalogId;
+                    statusText.innerHTML = `New Catalog ID Selected: <span class="fw-bold text-orange">${catalogId}</span>`;
+                    statusText.classList.remove('border-secondary', 'text-secondary');
+                    statusText.classList.add('border-orange', 'text-white');
+                })
+                .catch(err => {
+                    console.error('Error looking up vehicle:', err);
+                    statusText.innerHTML = '<span class="text-danger">Error identifying vehicle configuration.</span>';
+                });
+        });
+    });
+</script>
+
+</body>
+</html>

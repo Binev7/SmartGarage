@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:fragment="header-css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +18,7 @@
         .dropdown-menu { background-color: #161616; border: 1px solid #333; }
         .dropdown-item { color: white; }
         .dropdown-item:hover { background-color: #ff6600; color: black; }
+        .nav-link.active { border-bottom: 2px solid #ff6600; }
     </style>
 </head>
 <body>
@@ -24,34 +26,26 @@
 <nav th:fragment="navbar-customer" sec:authorize="isAuthenticated()" class="navbar navbar-expand-lg navbar-dark bg-black fixed-top border-bottom border-secondary">
     <div class="container">
         <a class="navbar-brand fw-bold d-flex align-items-center" th:href="@{/customer/dashboard}">
-            <span class="text-white">SMART</span>
-            <span class="text-orange ms-1">GARAGE</span>
+            <span class="text-white">SMART</span><span class="text-orange ms-1">GARAGE</span>
         </a>
-
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCustomer">
             <span class="navbar-toggler-icon"></span>
         </button>
-
         <div class="collapse navbar-collapse" id="navbarCustomer">
             <ul class="navbar-nav mx-auto text-uppercase">
                 <li class="nav-item"><a class="nav-link px-3 text-white fw-semibold" th:href="@{/customer/dashboard}">My Garage</a></li>
                 <li class="nav-item"><a class="nav-link px-3 text-white fw-semibold" th:href="@{/customer/services}">Services &amp; Prices</a></li>
                 <li class="nav-item"><a class="nav-link px-3 text-white fw-semibold" th:href="@{/customer/visits/history}">History</a></li>
             </ul>
-
             <div class="d-flex align-items-center">
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="customerMenu" role="button" data-bs-toggle="dropdown">
                         <div class="rounded-circle bg-dark text-orange d-flex align-items-center justify-content-center profile-initial">
-                            <span th:text="${#authentication != null ? #strings.substring(#authentication.name,0,1).toUpperCase() : 'U'}">U</span>
+                            <span sec:authentication="principal.firstName != null ? principal.firstName.substring(0,1).toUpperCase() : 'U'">U</span>
                         </div>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow">
-                        <li>
-                            <a class="dropdown-item py-2" th:href="@{/customer/dashboard}">
-                                <i class="bi bi-car-front me-2"></i> My Garage
-                            </a>
-                        </li>
+                        <li><a class="dropdown-item py-2" th:href="@{/customer/dashboard}"><i class="bi bi-car-front me-2"></i> My Garage</a></li>
                         <li><hr class="dropdown-divider bg-secondary"></li>
                         <li>
                             <form th:action="@{/logout}" method="post" class="px-2">
@@ -65,27 +59,54 @@
     </div>
 </nav>
 
-<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-black fixed-top border-bottom border-secondary py-2">
+<nav th:fragment="navbar" sec:authorize="!isAuthenticated()" class="navbar navbar-expand-lg navbar-dark bg-black fixed-top border-bottom border-secondary py-2">
     <div class="container">
         <a class="navbar-brand fw-bold d-flex align-items-center" th:href="@{/}">
-            <span class="text-white">SMART</span>
-            <span class="text-orange ms-1">GARAGE</span>
+            <span class="text-white">SMART</span><span class="text-orange ms-1">GARAGE</span>
         </a>
-
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto text-uppercase">
                 <li class="nav-item"><a class="nav-link fw-semibold text-white px-3" th:href="@{/}">Home</a></li>
                 <li class="nav-item"><a class="nav-link fw-semibold text-white px-3" th:href="@{/services}">Services</a></li>
                 <li class="nav-item"><a class="nav-link fw-semibold text-white px-3" th:href="@{/about}">About</a></li>
             </ul>
-
             <div class="d-flex align-items-center gap-3">
                 <a th:href="@{/auth/login}" class="text-white text-decoration-none small fw-bold">LOGIN</a>
                 <a th:href="@{/auth/register}" class="btn btn-orange px-4 py-2 rounded-0 btn-sm">REGISTER</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<nav th:fragment="navbar-admin" sec:authorize="hasRole('EMPLOYEE')" class="navbar navbar-expand-lg navbar-dark bg-black fixed-top border-bottom border-orange">
+    <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center" th:href="@{/employee/dashboard}">
+            <span class="text-white">SMART</span><span class="text-orange ms-1">GARAGE</span>
+            <span class="badge bg-orange text-black ms-2 small" style="font-size: 0.6rem;">STAFF</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAdmin">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarAdmin">
+            <ul class="navbar-nav mx-auto text-uppercase small fw-bold">
+                <li class="nav-item"><a class="nav-link px-3" th:href="@{/employee/dashboard}">Active Visits</a></li>
+                <li class="nav-item"><a class="nav-link px-3" th:href="@{/employee/services}">Manage Services</a></li>
+                <li class="nav-item"><a class="nav-link px-3" th:href="@{/employee/vehicles}">Client Vehicles</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/employee/vehicles/catalog}">Catalog</a></li>
+            </ul>
+            <div class="dropdown">
+                <a class="nav-link dropdown-toggle text-orange fw-bold" href="#" data-bs-toggle="dropdown">
+                    <i class="bi bi-person-badge me-1"></i>
+                    <span sec:authentication="principal.firstName">Staff</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary">
+                    <li><form th:action="@{/logout}" method="post" class="px-3 py-1">
+                        <button type="submit" class="btn btn-sm btn-outline-danger w-100">LOGOUT</button>
+                    </form></li>
+                </ul>
             </div>
         </div>
     </div>

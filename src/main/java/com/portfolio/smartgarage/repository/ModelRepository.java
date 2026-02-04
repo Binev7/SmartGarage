@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ModelRepository extends JpaRepository<Model, Long> {
@@ -15,6 +16,8 @@ public interface ModelRepository extends JpaRepository<Model, Long> {
     List<Model> findAllByBrandIdAndActiveTrue(Long brandId);
 
     boolean existsByNameAndBrandId(String name, Long brandId);
+
+    Optional<Model> findByNameAndBrandId(String name, Long brandId);
 
     @Modifying
     @Transactional

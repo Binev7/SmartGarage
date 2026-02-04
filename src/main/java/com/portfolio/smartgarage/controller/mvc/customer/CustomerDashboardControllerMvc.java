@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.controller.mvc;
+package com.portfolio.smartgarage.controller.mvc.customer;
 
 import com.portfolio.smartgarage.security.CustomUserDetails;
 import com.portfolio.smartgarage.service.interfaces.ClientVehicleService;

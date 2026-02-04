@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smart Garage | New Customer Wizard</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+    <style>
+        .form-section { background: #161616; border: 1px solid #333; padding: 25px; margin-bottom: 20px; }
+        .section-title { color: #ff6600; font-weight: 800; font-size: 0.9rem; letter-spacing: 1px; margin-bottom: 20px; text-transform: uppercase; }
+        .service-item:hover { background: #222; transition: 0.2s; }
+        .wizard-label { color: #888; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        .form-control:focus, .form-select:focus { border-color: #ff6600; box-shadow: none; background-color: #000; color: #fff; }
+    </style>
+</head>
+<body class="bg-dark text-white">
+<div th:replace="~{fragments/common :: navbar-admin}"></div>
+
+<main class="container py-5 mt-5">
+    <div class="mb-4">
+        <h2 class="fw-bold text-uppercase m-0">New Customer <span class="text-orange">Wizard</span></h2>
+        <p class="text-secondary">Register a new user, their vehicle, and an appointment in one step.</p>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger bg-dark text-danger border-danger rounded-0 mb-4" th:text="${error}"></div>
+
+    <form th:action="@{/templates/employee/visits/new-customer}" th:object="${newCustomerDto}" method="POST" id="wizardForm">
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="form-section shadow">
+                    <div class="section-title"><i class="bi bi-person-fill me-2"></i>Customer Information</div>
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="wizard-label">Username</label>
+                            <input type="text" th:field="*{username}" class="form-control bg-black text-white border-secondary rounded-0" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="wizard-label">First Name</label>
+                            <input type="text" th:field="*{firstName}" class="form-control bg-black text-white border-secondary rounded-0" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="wizard-label">Last Name</label>
+                            <input type="text" th:field="*{lastName}" class="form-control bg-black text-white border-secondary rounded-0" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="wizard-label">Email Address</label>
+                            <input type="email" th:field="*{email}" class="form-control bg-black text-white border-secondary rounded-0" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="wizard-label">Phone Number</label>
+                            <input type="text" th:field="*{phoneNumber}" class="form-control bg-black text-white border-secondary rounded-0" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-section shadow">
+                    <div class="section-title"><i class="bi bi-car-front-fill me-2"></i>Vehicle Details</div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="wizard-label">Brand</label>
+                            <select id="brandSelect" class="form-select bg-black text-white border-secondary rounded-0">
+                                <option value="" selected disabled>Select</option>
+                                <option th:each="b : ${brands}" th:value="${b.id}" th:text="${b.name}"></option>
+                            </select>
+                            <input type="hidden" th:field="*{brand}" id="hiddenBrandName">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="wizard-label">Model</label>
+                            <select id="modelSelect" class="form-select bg-black text-white border-secondary rounded-0" disabled>
+                                <option value="">Select Brand</option>
+                            </select>
+                            <input type="hidden" th:field="*{model}" id="hiddenModelName">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="wizard-label">Year</label>
+                            <select id="yearSelect" class="form-select bg-black text-white border-secondary rounded-0" disabled>
+                                <option value="">Select Model</option>
+                            </select>
+                            <input type="hidden" th:field="*{year}" id="hiddenYearValue">
+                        </div>
+
+                        <input type="hidden" th:field="*{catalogVehicleId}" id="catalogVehicleId">
+
+                        <div class="col-md-6 border-top border-secondary pt-3 mt-3">
+                            <label class="wizard-label">License Plate</label>
+                            <input type="text" th:field="*{licensePlate}" class="form-control bg-black text-white border-secondary rounded-0" placeholder="e.g. CB1234AB" required>
+                        </div>
+                        <div class="col-md-6 border-top border-secondary pt-3 mt-3">
+                            <label class="wizard-label">VIN Number</label>
+                            <input type="text" th:field="*{vin}" class="form-control bg-black text-white border-secondary rounded-0" maxlength="17" placeholder="17 characters" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="form-section shadow">
+                    <div class="section-title"><i class="bi bi-wrench-adjustable me-2"></i>Visit & Services</div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="wizard-label">Appointment Date & Time</label>
+                            <input type="datetime-local" th:field="*{date}" class="form-control bg-black text-white border-secondary rounded-0" required>
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            <label class="wizard-label">Select Services</label>
+                            <div class="bg-black border border-secondary p-3" style="max-height: 200px; overflow-y: auto;">
+                                <div th:each="service : ${availableServices}" class="form-check service-item p-2">
+                                    <input class="form-check-input ms-0 me-2" type="checkbox"
+                                           th:value="${service.id}" th:field="*{serviceIds}" th:id="${'svc' + service.id}">
+                                    <label class="form-check-label text-light" th:for="${'svc' + service.id}">
+                                        <span th:text="${service.name}"></span>
+                                        <span class="text-orange ms-2" th:text="'(' + ${#numbers.formatDecimal(service.price, 1, 2) + ' BGN)'}"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="wizard-label">Additional Comments / Notes</label>
+                            <textarea th:field="*{additionalComments}" class="form-control bg-black text-white border-secondary rounded-0" rows="3" placeholder="Enter any specific requirements..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-end mt-4 mb-5">
+            <a th:href="@{/templates/employee/dashboard}" class="btn btn-secondary px-5 py-2 rounded-0 fw-bold me-2">CANCEL</a>
+            <button type="submit" class="btn btn-orange px-5 py-2 rounded-0 fw-bold shadow-lg">FINALIZE REGISTRATION</button>
+        </div>
+    </form>
+</main>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+
+<script>
+    const brandSelect = document.getElementById('brandSelect');
+    const modelSelect = document.getElementById('modelSelect');
+    const yearSelect = document.getElementById('yearSelect');
+
+    const hiddenBrand = document.getElementById('hiddenBrandName');
+    const hiddenModel = document.getElementById('hiddenModelName');
+    const hiddenYear = document.getElementById('hiddenYearValue');
+    const catalogIdInput = document.getElementById('catalogVehicleId');
+
+    brandSelect.addEventListener('change', function() {
+        const brandId = this.value;
+        hiddenBrand.value = this.options[this.selectedIndex].text;
+
+
+        modelSelect.innerHTML = '<option value="">Loading...</option>';
+        modelSelect.disabled = true;
+        yearSelect.innerHTML = '<option value="">Select Model</option>';
+        yearSelect.disabled = true;
+
+        fetch(`/api/admin/vehicles/brands/${brandId}/models`)
+            .then(res => res.json())
+            .then(models => {
+                modelSelect.innerHTML = '<option value="" disabled selected>Select Model</option>';
+                models.forEach(m => {
+                    modelSelect.innerHTML += `<option value="${m.id}">${m.name}</option>`;
+                });
+                modelSelect.disabled = false;
+            });
+    });
+
+    modelSelect.addEventListener('change', function() {
+        const modelId = this.value;
+        hiddenModel.value = this.options[this.selectedIndex].text;
+
+        yearSelect.innerHTML = '<option value="">Loading...</option>';
+        yearSelect.disabled = true;
+
+        fetch(`/api/admin/vehicles/models/${modelId}/years`)
+            .then(res => res.json())
+            .then(years => {
+                yearSelect.innerHTML = '<option value="" disabled selected>Select Year</option>';
+                years.forEach(y => {
+                    yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+                });
+                yearSelect.disabled = false;
+            });
+    });
+
+    yearSelect.addEventListener('change', function() {
+        const year = this.value;
+        hiddenYear.value = parseInt(year);
+
+        fetch(`/api/admin/vehicles/lookup?modelId=${modelSelect.value}&year=${year}`)
+            .then(res => res.json())
+            .then(id => {
+                catalogIdInput.value = id;
+            });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smart Garage | Catalog Management</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+    <style>
+        .catalog-box { background: #111; border: 1px solid #333; padding: 25px; height: 100%; transition: 0.3s; }
+        .catalog-box:hover { border-color: #ff6600; }
+        .box-title { color: #ff6600; font-weight: 800; font-size: 0.85rem; letter-spacing: 1.5px; margin-bottom: 25px; text-transform: uppercase; }
+        .list-scroll { max-height: 400px; overflow-y: auto; border-top: 1px solid #222; margin-top: 15px; }
+        .form-select, .form-control { background-color: #000 !important; color: #fff !important; border-color: #444 !important; border-radius: 0 !important; }
+        .form-select:focus, .form-control:focus { border-color: #ff6600 !important; box-shadow: none !important; }
+        .model-item:hover { background-color: #1a1a1a; }
+    </style>
+</head>
+<body class="bg-dark text-white">
+<div th:replace="~{fragments/common :: navbar-admin}"></div>
+
+<div class="container-fluid py-5 mt-5 px-4">
+    <div class="mb-5">
+        <h2 class="fw-bold text-uppercase m-0">Vehicle <span class="text-orange">Library</span></h2>
+        <p class="text-secondary small">Manage the global database of brands, models, and production years.</p>
+    </div>
+
+    <div th:if="${message}" class="alert alert-success bg-dark text-success border-success rounded-0 shadow-lg" th:text="${message}"></div>
+    <div th:if="${error}" class="alert alert-danger bg-dark text-danger border-danger rounded-0 shadow-lg" th:text="${error}"></div>
+
+    <div class="row g-4">
+
+        <div class="col-xl-3 col-lg-4">
+            <div class="catalog-box shadow">
+                <div class="box-title"><i class="bi bi-tag-fill me-2"></i>1. Brands</div>
+                <form th:action="@{/templates/employee/vehicles/catalog/brands/add}" th:object="${brandRequest}" method="POST" class="mb-4">
+                    <div class="input-group">
+                        <input type="text" th:field="*{name}" class="form-control" placeholder="New Brand Name" required>
+                        <button class="btn btn-orange rounded-0"><i class="bi bi-plus-lg"></i></button>
+                    </div>
+                </form>
+                <div class="list-scroll">
+                    <div th:each="b : ${brands}" class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary small">
+                        <span th:text="${b.name}" class="fw-bold"></span>
+                        <form th:action="@{/api/admin/vehicles/brands/{id}/archive(id=${b.id})}" method="POST">
+                            <button type="submit" class="btn btn-link text-danger p-0" onclick="return confirm('Archive this brand and all its models?')">
+                                <i class="bi bi-archive"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-lg-8">
+            <div class="catalog-box shadow">
+                <div class="box-title"><i class="bi bi-car-front-fill me-2"></i>2. Manage Models</div>
+                <form th:action="@{/templates/employee/vehicles/catalog/models/add}" th:object="${modelRequest}" method="POST" class="mb-4">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="text-secondary small mb-1">Select Brand</label>
+                            <select th:field="*{brandId}" class="form-select" id="modelSectionBrandSelect" required>
+                                <option value="" selected disabled>Choose Brand</option>
+                                <option th:each="b : ${brands}" th:value="${b.id}" th:text="${b.name}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-secondary small mb-1">Model Name</label>
+                            <div class="input-group">
+                                <input type="text" th:field="*{name}" class="form-control" placeholder="e.g. Golf 7" required>
+                                <button class="btn btn-orange rounded-0"><i class="bi bi-plus-lg"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="list-scroll" id="modelListContainer">
+                    <p class="text-secondary small p-3 text-center">Select a brand above to manage its models.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-5 col-lg-12">
+            <div class="catalog-box shadow border-orange">
+                <div class="box-title text-white"><i class="bi bi-calendar-check-fill me-2 text-orange"></i>3. Production Years</div>
+
+                <form th:action="@{/templates/employee/vehicles/catalog/entries/add}" th:object="${catalogRequest}" method="POST" class="mb-4 bg-black p-3 border border-secondary shadow-sm">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <select id="catBrandSelect" class="form-select">
+                                <option value="" selected disabled>Brand</option>
+                                <option th:each="b : ${brands}" th:value="${b.id}" th:text="${b.name}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <select th:field="*{modelId}" id="catModelSelect" class="form-select" required disabled>
+                                <option value="">Model</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="number" th:field="*{year}" class="form-control" placeholder="Year" min="1950" max="2026" required>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-orange w-100 rounded-0 fw-bold">ADD</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="table-responsive list-scroll">
+                    <table class="table table-dark table-hover table-sm small align-middle mb-0">
+                        <thead class="bg-black text-orange sticky-top">
+                        <tr>
+                            <th class="ps-3 py-2">Brand</th>
+                            <th>Model</th>
+                            <th>Year</th>
+                            <th class="text-end pe-3">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="ce : ${catalogEntries}" class="border-secondary">
+                            <td th:text="${ce.brandName}" class="ps-3 text-secondary"></td>
+                            <td th:text="${ce.modelName}" class="text-white fw-bold"></td>
+                            <td th:text="${ce.year}" class="text-orange"></td>
+                            <td class="text-end pe-3">
+                                <form th:action="@{/api/admin/vehicles/catalog/{id}/archive(id=${ce.id})}" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-link text-danger p-0" onclick="return confirm('Remove this year from catalog?')">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+
+<script>
+    const modelSectionBrandSelect = document.getElementById('modelSectionBrandSelect');
+    const modelListContainer = document.getElementById('modelListContainer');
+
+    modelSectionBrandSelect.addEventListener('change', function() {
+        const brandId = this.value;
+        fetchModelsForList(brandId);
+    });
+
+    function fetchModelsForList(brandId) {
+        fetch(`/api/admin/vehicles/brands/${brandId}/models`)
+            .then(res => res.json())
+            .then(models => {
+                if (models.length === 0) {
+                    modelListContainer.innerHTML = '<p class="text-secondary small p-3 text-center">No models found for this brand.</p>';
+                    return;
+                }
+
+                let html = '';
+                models.forEach(m => {
+                    html += `
+                        <div class="d-flex justify-content-between align-items-center py-2 px-3 border-bottom border-secondary small model-item">
+                            <span class="text-white">${m.name}</span>
+                            <form action="/api/admin/vehicles/models/${m.id}/archive" method="POST">
+                                <button type="submit" class="btn btn-link text-danger p-0" onclick="return confirm('Archive this model and all its production years?')">
+                                    <i class="bi bi-archive-fill"></i>
+                                </button>
+                            </form>
+                        </div>`;
+                });
+                modelListContainer.innerHTML = html;
+            });
+    }
+
+    const catBrand = document.getElementById('catBrandSelect');
+    const catModel = document.getElementById('catModelSelect');
+
+    catBrand.addEventListener('change', function() {
+        const brandId = this.value;
+        fetch(`/api/admin/vehicles/brands/${brandId}/models`)
+            .then(res => res.json())
+            .then(models => {
+                catModel.innerHTML = '<option value="" disabled selected>Select Model</option>';
+                models.forEach(m => {
+                    catModel.innerHTML += `<option value="${m.id}">${m.name}</option>`;
+                });
+                catModel.disabled = false;
+            });
+    });
+</script>
+
+</body>
+</html>

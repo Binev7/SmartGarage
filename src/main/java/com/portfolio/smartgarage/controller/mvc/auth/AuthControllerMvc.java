@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.controller.mvc;
+package com.portfolio.smartgarage.controller.mvc.auth;
 
 import com.portfolio.smartgarage.dto.auth.*;
 import com.portfolio.smartgarage.helper.util.CookieUtils;

@@ -33,6 +33,7 @@ public class VisitViewDto {
     private Integer vehicleYear;
     private String vehicleLicensePlate;
 
+    private String ownerName;
     private List<ServiceSummaryDto> services;
     private BigDecimal totalPrice;
 

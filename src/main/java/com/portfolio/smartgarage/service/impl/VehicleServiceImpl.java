@@ -6,6 +6,7 @@ import com.portfolio.smartgarage.exception.ResourceNotFoundException;
 import com.portfolio.smartgarage.helper.mapper.BrandMapper;
 import com.portfolio.smartgarage.helper.mapper.ModelMapper;
 import com.portfolio.smartgarage.helper.mapper.VehicleMapper;
+import com.portfolio.smartgarage.helper.util.CreateAndSaveHelper;
 import com.portfolio.smartgarage.model.Brand;
 import com.portfolio.smartgarage.model.Model;
 import com.portfolio.smartgarage.model.Vehicle;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +33,7 @@ public class VehicleServiceImpl implements VehicleService {
     private final VehicleMapper vehicleMapper;
     private final BrandMapper brandMapper;
     private final ModelMapper modelMapper;
+    private final CreateAndSaveHelper createAndSaveHelper;
 
 
     @Override
@@ -40,14 +43,16 @@ public class VehicleServiceImpl implements VehicleService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<ModelResponseDto> getModelsByBrand(Long brandId) {
         return modelRepository.findAllByBrandIdAndActiveTrue(brandId).stream()
                 .map(m -> new ModelResponseDto(m.getId(), m.getName()))
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<Integer> getAvailableYearsForModel(Long modelId) {
-        return vehicleRepository.findAllByModelId(modelId).stream()
+        return vehicleRepository.findAllByModelIdAndActiveTrue(modelId).stream()
                 .map(Vehicle::getYear)
                 .distinct()
                 .sorted((a, b) -> b - a)
@@ -56,21 +61,16 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public Long getVehicleIdByModelAndYear(Long modelId, Integer year) {
-        return vehicleRepository.findByModelIdAndYear(modelId, year)
+        return vehicleRepository.findByModelIdAndYearAndActiveTrue(modelId, year)
                 .map(Vehicle::getId)
-                .orElseThrow(() -> new EntityNotFoundException("Vehicle not found in catalog for model ID: " + modelId + " and year: " + year));
+                .orElseThrow(() -> new EntityNotFoundException("This vehicle configuration is no longer active in our catalog."));
     }
 
     @Override
     @Transactional
     public BrandResponseDto createBrand(BrandRequestDto dto) {
-        brandRepository.findByNameIgnoreCase(dto.getName()).ifPresent(b -> {
-            throw new ResourceAlreadyExistsException("Brand already exists");
-        });
-
-        Brand brand = brandMapper.toEntity(dto);
-        Brand saved = brandRepository.save(brand);
-        return brandMapper.toResponseDto(saved);
+        Brand brand = createAndSaveHelper.findOrCreateBrand(dto);
+        return brandMapper.toResponseDto(brand);
     }
 
     @Override
@@ -79,32 +79,17 @@ public class VehicleServiceImpl implements VehicleService {
         Brand brand = brandRepository.findById(dto.getBrandId())
                 .orElseThrow(() -> new ResourceNotFoundException("Brand not found"));
 
-        if (modelRepository.existsByNameAndBrandId(dto.getName(), brand.getId())) {
-            throw new ResourceAlreadyExistsException("Model already exists");
-        }
-
-        Model model = modelMapper.toEntity(dto, brand);
-        Model saved = modelRepository.save(model);
-        return modelMapper.toResponseDto(saved);
+        Model model = createAndSaveHelper.findOrCreateModel(dto, brand);
+        return modelMapper.toResponseDto(model);
     }
 
     @Override
     @Transactional
     public void addVehicleToCatalog(VehicleCatalogDto dto) {
-
         Model model = modelRepository.findById(dto.getModelId())
                 .orElseThrow(() -> new ResourceNotFoundException("Model not found"));
 
-        if (vehicleRepository.existsByModelIdAndYear(dto.getModelId(), dto.getYear())) {
-            throw new ResourceAlreadyExistsException("This model year already exists in catalog");
-        }
-
-        Vehicle vehicle = Vehicle.builder()
-                .model(model)
-                .year(dto.getYear())
-                .build();
-
-        vehicleRepository.save(vehicle);
+        createAndSaveHelper.findOrCreateVehicle(dto, model);
     }
 
     @Override
@@ -133,11 +118,25 @@ public class VehicleServiceImpl implements VehicleService {
     @Transactional
     public void archiveBrand(Long id) {
         Brand brand = brandRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Model not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Brand not found"));
 
         brand.setActive(false);
         brandRepository.save(brand);
 
-        vehicleRepository.deactivateAllByModelId(id);
+        modelRepository.deactivateAllByBrandId(id);
+
+        vehicleRepository.deactivateAllByBrandId(id);
+    }
+
+
+    @Override
+    public List<VehicleResponseDto> getAllCatalogEntries() {
+        return vehicleRepository.findAllByActiveTrue().stream()
+                .map(v -> new VehicleResponseDto(
+                        v.getId(),
+                        v.getModel().getBrand().getName(),
+                        v.getModel().getName(),
+                        v.getYear()))
+                .collect(Collectors.toList());
     }
 }

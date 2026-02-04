@@ -26,5 +26,6 @@ public interface VehicleService {
 
     void archiveBrand(Long id);
 
+    List<VehicleResponseDto> getAllCatalogEntries();
 
 }
