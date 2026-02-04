@@ -14,6 +14,8 @@
             border: 1px solid #2a2a2a;
             transition: all 0.3s ease;
             height: 100%;
+            display: flex;
+            flex-direction: column;
         }
         .service-card:hover {
             border-color: #ff6600;
@@ -46,20 +48,62 @@
             box-shadow: none;
             color: white;
         }
+
+        /* Стил за валутния селектор */
+        .currency-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            min-width: 120px;
+        }
+
+        @media (max-width: 768px) {
+            .currency-selector {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body class="bg-dark text-white">
 <div th:replace="~{fragments/common :: navbar-customer}"></div>
 
 <header class="search-container">
-    <div class="container text-center">
+    <div class="currency-selector container d-flex justify-content-end">
+        <form th:action="@{/customer/services}" method="get">
+            <input type="hidden" name="query" th:value="${searchQuery}">
+
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-black text-secondary border-secondary">Currency</span>
+                <select name="currency" class="form-select bg-dark text-white border-secondary text-center fw-bold"
+                        onchange="this.form.submit()" style="cursor: pointer;">
+                    <option th:each="curr : ${currencies}"
+                            th:value="${curr}"
+                            th:text="${curr}"
+                            th:selected="${curr == selectedCurrency}"></option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <div class="container text-center mt-3 mt-md-0">
         <span class="text-orange fw-bold small text-uppercase mb-2 d-block">Price List 2026</span>
         <h1 class="display-5 fw-bold mb-3 text-uppercase">Services & <span class="text-orange">Prices</span></h1>
+
+        <div th:if="${rate}" class="badge bg-secondary mb-3 fw-normal">
+            <i class="bi bi-info-circle me-1"></i> Exchange Rate: 1 BGN ≈ <span th:text="${#numbers.formatDecimal(rate, 1, 4)}"></span> <span th:text="${selectedCurrency}"></span>
+        </div>
+
         <p class="text-secondary mb-4 mx-auto" style="max-width: 600px;">
             High-quality automotive maintenance with transparent and competitive pricing.
         </p>
 
         <form th:action="@{/customer/services}" method="GET" class="row justify-content-center">
+            <input type="hidden" name="currency" th:value="${selectedCurrency}">
+
             <div class="col-md-6">
                 <div class="input-group shadow-lg">
                     <input type="text" name="query" th:value="${searchQuery}"
@@ -75,10 +119,14 @@
 </header>
 
 <main class="container py-4">
+    <div th:if="${error}" class="alert alert-warning border-0 rounded-0 mb-4 text-center">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${error}"></span>
+    </div>
+
     <div th:if="${services.empty}" class="text-center py-5">
         <i class="bi bi-excursion fs-1 text-secondary mb-3 d-block"></i>
         <h4 class="text-secondary">No services match your search "<span th:text="${searchQuery}"></span>"</h4>
-        <a th:href="@{/customer/services}" class="text-orange fw-bold">View all available services</a>
+        <a th:href="@{/customer/services(currency=${selectedCurrency})}" class="text-orange fw-bold">View all available services</a>
     </div>
 
     <div class="row g-4">
@@ -98,7 +146,10 @@
                 <div class="mt-4 pt-3 border-top border-secondary d-flex justify-content-between align-items-center">
                     <div>
                         <span class="text-secondary d-block" style="font-size: 0.7rem;">PRICE FROM</span>
-                        <span class="price-tag" th:text="${s.price + ' BGN'}">75.00 BGN</span>
+                        <span class="price-tag">
+                            <span th:text="${#numbers.formatDecimal(s.price, 1, 2)}">75.00</span>
+                            <span style="font-size: 1rem;" th:text="${selectedCurrency}">BGN</span>
+                        </span>
                     </div>
                     <a th:href="@{/customer/dashboard}" class="btn btn-sm btn-outline-secondary rounded-0">BOOK</a>
                 </div>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smart Garage | Service Report</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+    <style>
+        .report-wrapper { background: #1a1a1a; padding: 40px 0; min-height: 100vh; }
+        .report-card {
+            background: #fff;
+            color: #000;
+            padding: 50px;
+            max-width: 850px;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-top: 8px solid #ff6600;
+        }
+
+        .invoice-header { border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 30px; }
+        .data-label { color: #888; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .data-value { color: #000; font-size: 0.95rem; font-weight: 600; display: block; margin-bottom: 15px; }
+        .text-orange-print { color: #ff6600 !important; }
+
+        .table-report { margin-top: 20px; border: 1px solid #eee; }
+        .table-report thead { background: #f8f9fa; }
+        .table-report th { border: none; font-size: 0.75rem; color: #666; padding: 12px 20px; text-transform: uppercase; }
+        .table-report td { padding: 12px 20px; border-bottom: 1px solid #eee; }
+
+        .total-box { background: #f8f9fa; padding: 20px 30px; margin-top: 20px; border-radius: 4px; }
+
+        .status-badge-container { margin-top: 5px; }
+
+        @media print {
+            nav, .navbar, .no-print, footer, .btn-group, .mt-5 { display: none !important; }
+            body, .report-wrapper { background: white !important; padding: 0 !important; margin: 0 !important; }
+            .report-card {
+                box-shadow: none !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                padding: 0 !important;
+                border: none !important;
+            }
+            @page { size: A4; margin: 1.5cm; }
+            .text-orange-print { color: #ff6600 !important; -webkit-print-color-adjust: exact; }
+            .total-box { background: #f8f9fa !important; -webkit-print-color-adjust: exact; border: 1px solid #ddd !important; }
+            .invoice-header { border-bottom: 2px solid #ff6600 !important; -webkit-print-color-adjust: exact; }
+
+            .badge { -webkit-print-color-adjust: exact; border: 1px solid #ddd !important; }
+        }
+    </style>
+</head>
+<body class="bg-dark text-white">
+<div th:replace="~{fragments/common :: navbar-admin}"></div>
+
+<div class="report-wrapper">
+    <main class="container">
+
+        <div class="d-flex justify-content-between align-items-center mb-4 no-print" style="max-width: 850px; margin: 0 auto;">
+            <a th:href="@{/templates/employee/dashboard}" class="btn btn-outline-light rounded-0 px-4">
+                <i class="bi bi-arrow-left me-2"></i> DASHBOARD
+            </a>
+            <button onclick="window.print()" class="btn btn-orange rounded-0 fw-bold px-4 shadow">
+                <i class="bi bi-printer-fill me-2"></i> PRINT REPORT
+            </button>
+        </div>
+
+        <div class="report-card">
+            <div class="invoice-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="fw-bold m-0" style="font-size: 2.3rem; letter-spacing: -1.5px;">SERVICE <span class="text-orange-print">REPORT</span></h1>
+                    <p class="m-0 text-muted fw-bold" th:text="'ORDER ID: #' + ${report.id}">ID: #7</p>
+                </div>
+                <div class="text-end">
+                    <h3 class="fw-bold text-orange-print mb-0">SMART GARAGE LTD.</h3>
+                    <p class="small text-muted m-0 text-uppercase letter-spacing-1">Professional Auto Solutions</p>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-4 border-end">
+                    <span class="data-label">Customer</span>
+                    <span class="data-value" th:text="${report.username}">ivan</span>
+                    <span class="small text-muted d-block" th:text="${report.userEmail}">ivan@gmail.com</span>
+                    <span class="small text-muted d-block" th:text="${report.userPhoneNumber}">+359...</span>
+                </div>
+                <div class="col-4 border-end ps-4">
+                    <span class="data-label">Vehicle</span>
+                    <span class="data-value" th:text="${report.vehicleBrand + ' ' + report.vehicleModel}">Volkswagen GOLF</span>
+                    <span class="data-value text-orange-print" th:text="${report.vehicleLicensePlate}">CB7777PT</span>
+                    <span class="small text-muted" th:text="'VIN: ' + ${report.vehicleVin}">JASCG123...</span>
+                </div>
+                <div class="col-4 text-end ps-4">
+                    <span class="data-label">Service Date</span>
+                    <span class="data-value" th:text="${#temporals.format(report.date, 'dd MMM yyyy, HH:mm')}">03 Feb 2026</span>
+
+                    <span class="data-label">Repair Status</span>
+                    <div class="status-badge-container">
+                        <span class="badge rounded-0 px-3 py-2 text-uppercase"
+                              th:classappend="${report.status.name() == 'COMPLETED' ? 'bg-success' :
+                                               (report.status.name() == 'REJECTED' ? 'bg-danger' :
+                                               (report.status.name() == 'APPROVED' ? 'bg-primary' : 'bg-warning text-dark'))}"
+                              th:text="${report.status}">COMPLETED</span>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table table-report">
+                <thead>
+                <tr>
+                    <th class="ps-4">Work Description</th>
+                    <th class="text-end pe-4">Cost (BGN)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="service : ${report.services}">
+                    <td class="ps-4 py-3 fw-bold" th:text="${service.name}">Oil Change</td>
+                    <td class="text-end pe-4 py-3 fw-bold" th:text="${#numbers.formatDecimal(service.price, 1, 2)}">50.00</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="total-box d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="m-0 fw-bold">TOTAL AMOUNT DUE</h5>
+                    <p class="small text-muted m-0">Final price including all services.</p>
+                </div>
+                <div class="text-end">
+                    <h2 class="fw-bold text-orange-print m-0" th:text="${#numbers.formatDecimal(report.totalPrice, 1, 2) + ' BGN'}">50.00 BGN</h2>
+                </div>
+            </div>
+
+            <div th:if="${report.additionalComments != null and !report.additionalComments.isEmpty()}" class="mt-4 p-3 border-start border-4">
+                <span class="data-label">Notes / Observations:</span>
+                <p class="small text-muted m-0" th:text="${report.additionalComments}"></p>
+            </div>
+
+            <div class="mt-5 pt-4 text-center border-top d-none d-print-block">
+                <p class="small text-muted">Thank you for your trust! This document serves as an official service history record.</p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+</body>
+</html>
