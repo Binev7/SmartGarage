@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.controller.mvc;
+package com.portfolio.smartgarage.controller.mvc.base;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

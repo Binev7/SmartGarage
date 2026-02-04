@@ -1,4 +1,4 @@
-package com.portfolio.smartgarage.controller.mvc;
+package com.portfolio.smartgarage.controller.mvc.admin;
 
 import com.portfolio.smartgarage.dto.service.ServiceRequestDto;
 import com.portfolio.smartgarage.dto.service.ServiceResponseDto;
