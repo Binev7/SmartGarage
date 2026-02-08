@@ -30,7 +30,7 @@
             <h1 class="fw-bold text-uppercase m-0">Staff <span class="text-orange">Dashboard</span></h1>
             <p class="text-secondary small mb-0">Manage service lifecycle: Pending → Approved/Rejected → Completed.</p>
         </div>
-        <a th:href="@{/templates/employee/visits/new-customer}" class="btn btn-orange px-4 py-2 fw-bold rounded-0 shadow">
+        <a th:href="@{/employee/visits/new-customer}" class="btn btn-orange px-4 py-2 fw-bold rounded-0 shadow">
             <i class="bi bi-person-plus-fill me-2"></i> NEW CUSTOMER VISIT
         </a>
     </div>
@@ -85,7 +85,7 @@
                         <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end border-secondary shadow">
 
                             <li th:if="${v.status.name() == 'PENDING'}">
-                                <form th:action="@{/templates/employee/visits/{id}/status(id=${v.id})}" method="post">
+                                <form th:action="@{/employee/visits/{id}/status(id=${v.id})}" method="post">
                                     <input type="hidden" name="status" value="APPROVED">
                                     <button class="dropdown-item py-2 text-primary fw-bold">
                                         <i class="bi bi-check-circle-fill me-2"></i> APPROVE VISIT
@@ -93,7 +93,7 @@
                                 </form>
                             </li>
                             <li th:if="${v.status.name() == 'PENDING'}">
-                                <form th:action="@{/templates/employee/visits/{id}/status(id=${v.id})}" method="post"
+                                <form th:action="@{/employee/visits/{id}/status(id=${v.id})}" method="post"
                                       onsubmit="return confirm('REJECT this visit? The customer will be notified via their portal.');">
                                     <input type="hidden" name="status" value="REJECTED">
                                     <button class="dropdown-item py-2 text-danger">
@@ -103,7 +103,7 @@
                             </li>
 
                             <li th:if="${v.status.name() == 'APPROVED'}">
-                                <form th:action="@{/templates/employee/visits/{id}/status(id=${v.id})}" method="post">
+                                <form th:action="@{/employee/visits/{id}/status(id=${v.id})}" method="post">
                                     <input type="hidden" name="status" value="COMPLETED">
                                     <button class="dropdown-item py-2 text-success fw-bold">
                                         <i class="bi bi-flag-fill me-2"></i> MARK AS COMPLETED
@@ -114,13 +114,13 @@
                             <li><hr class="dropdown-divider bg-secondary opacity-25"></li>
 
                             <li>
-                                <a th:href="@{/templates/employee/visits/report/{id}(id=${v.id})}" class="dropdown-item py-2">
+                                <a th:href="@{/employee/visits/report/{id}(id=${v.id})}" class="dropdown-item py-2">
                                     <i class="bi bi-file-earmark-bar-graph me-2"></i> View Full Report
                                 </a>
                             </li>
 
                             <li>
-                                <form th:action="@{/templates/employee/visits/delete/{id}(id=${v.id})}" method="post"
+                                <form th:action="@{/employee/visits/delete/{id}(id=${v.id})}" method="post"
                                       onsubmit="return confirm('WARNING: This will permanently DELETE the record. Customers will no longer see it. Continue?');">
                                     <button class="dropdown-item py-2 btn-delete-record">
                                         <i class="bi bi-trash3 me-2"></i> Permanent Delete
