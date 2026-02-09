@@ -34,7 +34,6 @@ public class AuthController {
     @Operation(summary = "Logout user", description = "Clears the authentication cookie.")
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletResponse response) {
-        // Позволяваме на API клиентите също да чистят бисквитката
         response.addCookie(CookieUtils.clearCookie("jwt"));
         return ResponseEntity.ok("Logged out successfully");
     }

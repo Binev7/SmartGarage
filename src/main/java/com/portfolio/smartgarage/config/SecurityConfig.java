@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider; // Този е важен!
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -49,25 +49,22 @@ public class SecurityConfig {
 
                 .formLogin(form -> form
                         .loginPage("/auth/login")
-                        .loginProcessingUrl("/auth/login")
-                        .usernameParameter("email")    // ТОВА свързва HTML името с бекенда
+                        .loginProcessingUrl("/auth/security_check_disabled")
+                        .usernameParameter("email")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/auth/home", true) // Пренасочва към "умния" метод
                         .permitAll()
                 )
 
                 .logout(logout -> logout
-                        // ПОПРАВКА: Синхронизирано с th:action="@{/logout}" в HTML
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/auth/login?logout")
                         .invalidateHttpSession(true)
-                        .clearAuthentication(true) // Изчиства аутентикацията изрично
-                        .deleteCookies("JSESSIONID")
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID", "jwt")
                         .permitAll()
                 )
 
                 .authenticationProvider(authenticationProvider())
-                // JWT филтърът се изпълнява преди стандартния Username/Password
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

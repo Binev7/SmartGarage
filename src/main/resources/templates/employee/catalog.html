@@ -30,7 +30,7 @@
         <div class="col-xl-3 col-lg-4">
             <div class="catalog-box shadow">
                 <div class="box-title"><i class="bi bi-tag-fill me-2"></i>1. Brands</div>
-                <form th:action="@{/templates/employee/vehicles/catalog/brands/add}" th:object="${brandRequest}" method="POST" class="mb-4">
+                <form th:action="@{/employee/vehicles/catalog/brands/add}" th:object="${brandRequest}" method="POST" class="mb-4">
                     <div class="input-group">
                         <input type="text" th:field="*{name}" class="form-control" placeholder="New Brand Name" required>
                         <button class="btn btn-orange rounded-0"><i class="bi bi-plus-lg"></i></button>
@@ -52,7 +52,7 @@
         <div class="col-xl-4 col-lg-8">
             <div class="catalog-box shadow">
                 <div class="box-title"><i class="bi bi-car-front-fill me-2"></i>2. Manage Models</div>
-                <form th:action="@{/templates/employee/vehicles/catalog/models/add}" th:object="${modelRequest}" method="POST" class="mb-4">
+                <form th:action="@{/employee/vehicles/catalog/models/add}" th:object="${modelRequest}" method="POST" class="mb-4">
                     <div class="row g-2">
                         <div class="col-md-6">
                             <label class="text-secondary small mb-1">Select Brand</label>
@@ -81,7 +81,7 @@
             <div class="catalog-box shadow border-orange">
                 <div class="box-title text-white"><i class="bi bi-calendar-check-fill me-2 text-orange"></i>3. Production Years</div>
 
-                <form th:action="@{/templates/employee/vehicles/catalog/entries/add}" th:object="${catalogRequest}" method="POST" class="mb-4 bg-black p-3 border border-secondary shadow-sm">
+                <form th:action="@{/employee/vehicles/catalog/entries/add}" th:object="${catalogRequest}" method="POST" class="mb-4 bg-black p-3 border border-secondary shadow-sm">
                     <div class="row g-2">
                         <div class="col-md-4">
                             <select id="catBrandSelect" class="form-select">
