@@ -80,13 +80,6 @@ public class ClientVehicleServiceImpl implements ClientVehicleService {
     }
 
     @Override
-    public ClientVehicleResponseDto getVehicleByPlate(String plate) {
-        ClientVehicle cv = clientVehicleRepository.findByLicensePlate(plate)
-                .orElseThrow(() -> new ResourceNotFoundException("Vehicle with plate " + plate + " not found"));
-        return clientVehicleMapper.toDto(cv);
-    }
-
-    @Override
     @Transactional
     public ClientVehicleResponseDto updateVehicle(Long id, ClientVehicleRequestDto request) {
         ClientVehicle existing = clientVehicleRepository.findById(id)

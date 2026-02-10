@@ -19,8 +19,6 @@ public interface ClientVehicleService {
 
     Page<ClientVehicleResponseDto> getAllVehicles(Pageable pageable);
 
-    ClientVehicleResponseDto getVehicleByPlate(String plate);
-
     ClientVehicleResponseDto updateVehicle(Long id, ClientVehicleRequestDto request);
 
     List<ClientVehicleResponseDto> getMyVehicles(Long userId);
