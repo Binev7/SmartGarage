@@ -131,11 +131,6 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public long getVisitCountByDate(LocalDate date) {
-        return visitRepository.countByDate(date);
-    }
-
-    @Override
     @Transactional
     public void deleteVisit(Long visitId) {
         Visit visit = visitRepository.findById(visitId)

@@ -19,7 +19,7 @@ import java.util.Map;
 public class VisitHelper {
 
 
-    private static final String BASE_CURRENCY = "BGN";
+    private static final String BASE_CURRENCY = "EUR";
 
 
     private final CurrencyService currencyService;

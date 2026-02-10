@@ -107,7 +107,7 @@
                 <thead>
                 <tr>
                     <th class="ps-4">Work Description</th>
-                    <th class="text-end pe-4">Cost (BGN)</th>
+                    <th class="text-end pe-4">Cost (EUR)</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -124,7 +124,7 @@
                     <p class="small text-muted m-0">Final price including all services.</p>
                 </div>
                 <div class="text-end">
-                    <h2 class="fw-bold text-orange-print m-0" th:text="${#numbers.formatDecimal(report.totalPrice, 1, 2) + ' BGN'}">50.00 BGN</h2>
+                    <h2 class="fw-bold text-orange-print m-0" th:text="${#numbers.formatDecimal(report.totalPrice, 1, 2) + ' EUR'}">50.00 EUR</h2>
                 </div>
             </div>
 
