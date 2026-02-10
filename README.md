@@ -13,6 +13,64 @@ SmartGarage is a demo/portfolio Spring Boot application for a car garage. It sup
 - Employee/Admin flow: manage services, visits, generate PDF invoices
 - REST API for programmatic access and MVC controllers that serve Thymeleaf templates for the UI
 
+## 📸 Screenshots
+
+### Customer Portal
+Manage vehicles and book appointments easily.
+
+<p align="center">
+  <img
+    src="https://github.com/user-attachments/assets/5b7f1f09-9cb9-4bb9-bddf-5cbb12925a67"
+    alt="Customer Dashboard"
+    width="700"
+  >
+</p>
+
+---
+
+### Booking Process
+Select vehicle, services, and check calendar availability.
+
+<p align="center">
+  <img
+    src="https://github.com/user-attachments/assets/a70e9a7d-a46a-4ac7-8977-0512d72c7e54"
+    alt="Booking Form"
+    width="700"
+  >
+</p>
+
+---
+
+### Employee Administration
+Manage visits, update statuses, and create service orders.
+
+<p align="center">
+  <img
+    src="https://github.com/user-attachments/assets/01aeaa34-0aa5-4b67-89fc-599827c5dccf"
+    alt="Admin Dashboard"
+    width="700"
+  >
+</p>
+
+---
+
+### PDF Invoicing & API
+Automatic invoice generation and full Swagger documentation.
+
+<p align="center">
+  <img
+    src="https://github.com/user-attachments/assets/69fd23bb-ca1b-4982-9432-66eedf817439"
+    alt="PDF Invoice"
+    width="45%"
+  >
+  <img
+    src="https://github.com/user-attachments/assets/79a41668-eca7-41ee-9ae1-8e028c2556d3"
+    alt="Swagger UI"
+    width="45%"
+  >
+</p>
+
+
 ## Tech stack
 
 - Java 17 (toolchain configured in `build.gradle`)
