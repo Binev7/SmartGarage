@@ -18,10 +18,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class VisitHelper {
 
-
-    private static final String BASE_CURRENCY = "EUR";
-
-
     private final CurrencyService currencyService;
     private final VisitMapper visitMapper;
     private final VisitRepository visitRepository;
@@ -37,11 +33,11 @@ public class VisitHelper {
         VisitViewDto dto = visitMapper.toDto(visit);
         if (targetCurrency != null && !targetCurrency.isBlank() &&
                 !targetCurrency.equalsIgnoreCase(BaseConstants.BASE_CURRENCY)) {
-            BigDecimal convertedTotal = currencyService.convert(visit.getTotalPrice(), BASE_CURRENCY, targetCurrency);
+            BigDecimal convertedTotal = currencyService.convert(visit.getTotalPrice(), BaseConstants.BASE_CURRENCY, targetCurrency);
             dto.setTotalPrice(convertedTotal);
             dto.setCurrency(targetCurrency.toUpperCase());
         } else {
-            dto.setCurrency(BASE_CURRENCY);
+            dto.setCurrency(BaseConstants.BASE_CURRENCY);
         }
         return dto;
     }
