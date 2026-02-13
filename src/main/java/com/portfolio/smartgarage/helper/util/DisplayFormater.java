@@ -22,7 +22,7 @@ public class DisplayFormater {
 
     public String formatCurrency(Double amount, String currencyCode) {
         if (amount == null) amount = 0.0;
-        if (currencyCode == null) currencyCode = "BGN";
+        if (currencyCode == null) currencyCode = "EUR";
 
         return String.format("%.2f %s", amount, currencyCode);
     }

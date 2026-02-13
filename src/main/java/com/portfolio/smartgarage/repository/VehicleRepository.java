@@ -18,7 +18,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long>, JpaSpec
 
     List<Vehicle> findAllByModelIdAndActiveTrue(Long modelId);
 
-    boolean existsByModelIdAndYear(Long modelId, int year);
+    /*boolean existsByModelIdAndYear(Long modelId, int year);*/
 
     @Modifying
     @Transactional

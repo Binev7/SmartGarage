@@ -55,7 +55,7 @@
     <main class="container">
 
         <div class="d-flex justify-content-between align-items-center mb-4 no-print" style="max-width: 850px; margin: 0 auto;">
-            <a th:href="@{/templates/employee/dashboard}" class="btn btn-outline-light rounded-0 px-4">
+            <a th:href="@{/employee/dashboard}" class="btn btn-outline-light rounded-0 px-4">
                 <i class="bi bi-arrow-left me-2"></i> DASHBOARD
             </a>
             <button onclick="window.print()" class="btn btn-orange rounded-0 fw-bold px-4 shadow">
@@ -107,7 +107,7 @@
                 <thead>
                 <tr>
                     <th class="ps-4">Work Description</th>
-                    <th class="text-end pe-4">Cost (BGN)</th>
+                    <th class="text-end pe-4">Cost (EUR)</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -124,7 +124,7 @@
                     <p class="small text-muted m-0">Final price including all services.</p>
                 </div>
                 <div class="text-end">
-                    <h2 class="fw-bold text-orange-print m-0" th:text="${#numbers.formatDecimal(report.totalPrice, 1, 2) + ' BGN'}">50.00 BGN</h2>
+                    <h2 class="fw-bold text-orange-print m-0" th:text="${#numbers.formatDecimal(report.totalPrice, 1, 2) + ' EUR'}">50.00 EUR</h2>
                 </div>
             </div>
 

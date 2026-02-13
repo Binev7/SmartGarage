@@ -1,11 +1,9 @@
 package com.portfolio.smartgarage.service.impl;
 
 import com.portfolio.smartgarage.dto.vehicle.*;
-import com.portfolio.smartgarage.exception.ResourceAlreadyExistsException;
 import com.portfolio.smartgarage.exception.ResourceNotFoundException;
 import com.portfolio.smartgarage.helper.mapper.BrandMapper;
 import com.portfolio.smartgarage.helper.mapper.ModelMapper;
-import com.portfolio.smartgarage.helper.mapper.VehicleMapper;
 import com.portfolio.smartgarage.helper.util.CreateAndSaveHelper;
 import com.portfolio.smartgarage.model.Brand;
 import com.portfolio.smartgarage.model.Model;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +27,6 @@ public class VehicleServiceImpl implements VehicleService {
     private final BrandRepository brandRepository;
     private final ModelRepository modelRepository;
     private final VehicleRepository vehicleRepository;
-    private final VehicleMapper vehicleMapper;
     private final BrandMapper brandMapper;
     private final ModelMapper modelMapper;
     private final CreateAndSaveHelper createAndSaveHelper;

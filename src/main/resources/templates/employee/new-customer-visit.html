@@ -22,7 +22,7 @@
 
     <div th:if="${error}" class="alert alert-danger bg-dark text-danger border-danger rounded-0 mb-4" th:text="${error}"></div>
 
-    <form th:action="@{/templates/employee/visits/new-customer}" th:object="${newCustomerDto}" method="POST" id="wizardForm">
+    <form th:action="@{/employee/visits/new-customer}" th:object="${newCustomerDto}" method="POST" id="wizardForm">
         <div class="row">
 
             <div class="col-md-6">
@@ -127,7 +127,7 @@
         </div>
 
         <div class="text-end mt-4 mb-5">
-            <a th:href="@{/templates/employee/dashboard}" class="btn btn-secondary px-5 py-2 rounded-0 fw-bold me-2">CANCEL</a>
+            <a th:href="@{/employee/dashboard}" class="btn btn-secondary px-5 py-2 rounded-0 fw-bold me-2">CANCEL</a>
             <button type="submit" class="btn btn-orange px-5 py-2 rounded-0 fw-bold shadow-lg">FINALIZE REGISTRATION</button>
         </div>
     </form>
