@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Smart Garage | About Us</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+
+    <style>
+        body {
+            padding-top: 75px;
+            background-color: #0b0b0b;
+        }
+        .feature-box {
+            background-color: #161616;
+            border: 1px solid #2a2a2a;
+            padding: 30px;
+            height: 100%;
+            transition: 0.3s;
+        }
+        .feature-box:hover {
+            border-color: #ff6600;
+            transform: translateY(-5px);
+        }
+        .icon-square {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 102, 0, 0.1);
+            color: #ff6600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+
+    </style>
+</head>
+<body class="bg-dark text-white">
+
+<div th:replace="~{fragments/common :: navbar}"></div>
+
+<header class="py-5 border-bottom border-secondary" style="background: linear-gradient(to bottom, #161616, #0b0b0b);">
+    <div class="container text-center py-5">
+        <h1 class="display-4 fw-bold text-uppercase mb-3">Who We <span class="text-orange">Are</span></h1>
+        <p class="lead text-secondary mx-auto" style="max-width: 700px;">
+            We are more than just mechanics. We are car enthusiasts dedicated to precision, transparency, and keeping your vehicle running at its peak performance.
+        </p>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container py-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <h5 class="text-orange fw-bold text-uppercase mb-3">Our Story</h5>
+                <h2 class="fw-bold mb-4 display-6">DRIVEN BY <br>PASSION & TECHNOLOGY</h2>
+                <p class="text-secondary mb-4">
+                    Smart Garage was founded in 2020 with a simple mission: to modernize the auto repair industry. We saw a gap between complex modern vehicles and traditional repair shops.
+                </p>
+                <p class="text-secondary mb-4">
+                    Our facility uses state-of-the-art diagnostic tools, and our booking system makes car maintenance as easy as ordering a pizza. No hidden fees, no surprise costs.
+                </p>
+
+                <div class="d-flex gap-4 mt-4">
+                    <div>
+                        <h2 class="fw-bold text-white mb-0">5k+</h2>
+                        <small class="text-secondary text-uppercase">Repairs</small>
+                    </div>
+                    <div class="border-start border-secondary mx-2"></div>
+                    <div>
+                        <h2 class="fw-bold text-white mb-0">12</h2>
+                        <small class="text-secondary text-uppercase">Experts</small>
+                    </div>
+                    <div class="border-start border-secondary mx-2"></div>
+                    <div>
+                        <h2 class="fw-bold text-white mb-0">100%</h2>
+                        <small class="text-secondary text-uppercase">Warranty</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="bg-black border border-secondary p-2 position-relative shadow-lg">
+                    <img th:src="@{/images/about.jpg}"
+                         alt="Smart Garage Workshop"
+                         class="img-fluid"
+                         style="object-fit: cover; height: 400px; width: 100%; display: block;">
+
+                    <div class="bg-orange position-absolute" style="width: 100px; height: 100px; bottom: -20px; right: -20px; z-index: -1;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-black border-top border-bottom border-secondary">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-uppercase">Why Choose <span class="text-orange">Smart Garage</span></h2>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-box rounded-0">
+                    <div class="icon-square">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4 class="fw-bold">Certified Parts</h4>
+                    <p class="text-secondary mt-3 mb-0">
+                        We only use OEM or high-grade aftermarket parts. Your safety is never compromised for profit.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-box rounded-0">
+                    <div class="icon-square">
+                        <i class="bi bi-cash-coin"></i>
+                    </div>
+                    <h4 class="fw-bold">Transparent Pricing</h4>
+                    <p class="text-secondary mt-3 mb-0">
+                        The price you see is the price you pay. All costs are approved by you before we start working.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-box rounded-0">
+                    <div class="icon-square">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <h4 class="fw-bold">Fast Turnaround</h4>
+                    <p class="text-secondary mt-3 mb-0">
+                        We value your time. Our digital booking system ensures your car is serviced exactly when scheduled.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 text-center">
+    <div class="container py-5">
+        <h2 class="display-6 fw-bold mb-4">READY TO BOOK AN APPOINTMENT?</h2>
+        <p class="text-secondary mb-5">Join thousands of satisfied customers who trust Smart Garage.</p>
+
+        <div class="d-flex justify-content-center gap-3">
+            <a th:href="@{/services}" class="btn btn-orange px-5 py-3 fw-bold rounded-0">VIEW SERVICES</a>
+
+            <a sec:authorize="!isAuthenticated()" th:href="@{/auth/register}" class="btn btn-outline-light px-5 py-3 fw-bold rounded-0">REGISTER NOW</a>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+</body>
+</html>
