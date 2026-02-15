@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smart Garage | Services & Prices</title>
+    <div th:replace="~{fragments/common :: header-css}"></div>
+    <style>
+        body {
+            padding-top: 75px;
+            background-color: #0b0b0b;
+        }
+
+        .service-card {
+            background: #161616;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .service-card:hover {
+            border-color: #ff6600;
+            transform: translateY(-5px);
+        }
+        .price-tag {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #ff6600;
+        }
+
+        .search-container {
+            background: linear-gradient(to bottom, #1a1a1a, #0b0b0b);
+            padding: 40px 0;
+            border-bottom: 2px solid #ff6600;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .form-control-dark {
+            background: #000;
+            border: 1px solid #333;
+            color: white;
+            padding: 12px 20px;
+        }
+        .form-control-dark:focus {
+            background: #050505;
+            border-color: #ff6600;
+            box-shadow: none;
+            color: white;
+        }
+
+        .currency-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            min-width: 120px;
+        }
+
+        @media (max-width: 768px) {
+            .currency-selector {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-dark text-white">
+
+<div th:replace="~{fragments/common :: navbar}"></div>
+
+<header class="search-container">
+    <div class="currency-selector container d-flex justify-content-end">
+        <form th:action="@{/services}" method="get">
+            <input type="hidden" name="query" th:value="${searchQuery}">
+
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-black text-secondary border-secondary">Currency</span>
+                <select name="currency"
+                        class="form-select bg-dark text-white border-secondary text-center fw-bold"
+                        onchange="this.form.submit()" style="cursor: pointer;">
+                    <option th:each="curr : ${currencies}"
+                            th:value="${curr}"
+                            th:text="${curr}"
+                            th:selected="${curr == selectedCurrency}">
+                    </option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <div class="container text-center mt-3 mt-md-0">
+        <span class="text-orange fw-bold small text-uppercase mb-2 d-block">Price List 2026</span>
+        <h1 class="display-5 fw-bold mb-3 text-uppercase">
+            Services & <span class="text-orange">Prices</span>
+        </h1>
+
+        <div th:if="${rate}" class="badge bg-secondary mb-3 fw-normal">
+            <i class="bi bi-info-circle me-1"></i>
+            Exchange Rate: 1 BGN ≈
+            <span th:text="${#numbers.formatDecimal(rate, 1, 4)}"></span>
+            <span th:text="${selectedCurrency}"></span>
+        </div>
+
+        <p class="text-secondary mb-4 mx-auto" style="max-width: 600px;">
+            High-quality automotive maintenance with transparent and competitive pricing.
+        </p>
+
+        <form th:action="@{/services}" method="GET" class="row justify-content-center">
+            <input type="hidden" name="currency" th:value="${selectedCurrency}">
+
+            <div class="col-md-6">
+                <div class="input-group shadow-lg">
+                    <input type="text"
+                           name="query"
+                           th:value="${searchQuery}"
+                           class="form-control form-control-dark rounded-0"
+                           placeholder="What does your car need? (e.g. Brake, Oil...)">
+
+                    <button class="btn btn-orange px-4 rounded-0" type="submit">
+                        <i class="bi bi-search me-2"></i>FIND
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</header>
+
+<main class="container py-4">
+
+    <div th:if="${error}" class="alert alert-warning border-0 rounded-0 mb-4 text-center">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div th:if="${services == null or services.empty}" class="text-center py-5">
+        <i class="bi bi-excursion fs-1 text-secondary mb-3 d-block"></i>
+        <h4 class="text-secondary">
+            No services match your search "<span th:text="${searchQuery}"></span>"
+        </h4>
+        <a th:href="@{/services(currency=${selectedCurrency})}"
+           class="text-orange fw-bold">
+            View all available services
+        </a>
+    </div>
+
+    <div class="row g-4" th:if="${services != null}">
+        <div th:each="s : ${services}" class="col-md-6 col-lg-4">
+
+            <div class="card service-card p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="fw-bold text-uppercase m-0"
+                        style="letter-spacing: 0.5px;"
+                        th:text="${s.name}">
+                        Service Name
+                    </h5>
+
+                    <div class="bg-dark p-2 border border-secondary">
+                        <i class="bi bi-gear-fill text-orange"></i>
+                    </div>
+                </div>
+
+                <p class="text-secondary small flex-grow-1">
+                    Professional service performed by certified mechanics using OEM or higher grade parts.
+                </p>
+
+                <div class="mt-4 pt-3 border-top border-secondary d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-secondary d-block" style="font-size: 0.7rem;">
+                            PRICE FROM
+                        </span>
+
+                        <span class="price-tag">
+                            <span th:text="${#numbers.formatDecimal(s.price, 1, 2)}">75.00</span>
+                            <span style="font-size: 1rem;" th:text="${selectedCurrency}">BGN</span>
+                        </span>
+                    </div>
+
+                    <a th:href="@{/auth/login}"
+                       class="btn btn-sm btn-outline-secondary rounded-0">
+                        BOOK NOW
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/common :: footer-scripts}"></div>
+
+</body>
+</html>

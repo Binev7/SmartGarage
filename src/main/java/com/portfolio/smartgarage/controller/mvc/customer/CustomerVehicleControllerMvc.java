@@ -111,17 +111,4 @@ public class CustomerVehicleControllerMvc {
         model.addAttribute("selectedCurrency", currency);
         return "customer/vehicle-details";
     }
-
-    @PostMapping("/delete/{id}")
-    public String deleteVehicle(@PathVariable Long id,
-                                @AuthenticationPrincipal CustomUserDetails userDetails) {
-        try {
-            clientVehicleService.deleteVehicle(id, userDetails.getId());
-            return "redirect:/customer/dashboard?success=vehicle_deleted";
-        } catch (AccessDeniedException ade) {
-            return "redirect:/customer/dashboard?error=delete_unauthorized";
-        } catch (Exception e) {
-            return "redirect:/customer/dashboard?error=delete_failed";
-        }
-    }
 }
