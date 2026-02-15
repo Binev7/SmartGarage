@@ -72,16 +72,4 @@ public class VehicleController {
             @Valid @RequestBody ClientVehicleRequestDto request) {
         return ResponseEntity.ok(clientVehicleService.registerVehicle(request, userDetails.getId()));
     }
-
-    @Operation(summary = "Delete vehicle", description = "Removes a vehicle from the user's profile. Restricted to owner or employees.")
-    @DeleteMapping("/{id}")
-    @IsVehicleOwnerOrEmployee
-    public ResponseEntity<Void> deleteVehicle(
-            @Parameter(description = "ID of the vehicle to delete") @PathVariable Long id,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        clientVehicleService.deleteVehicle(id, userDetails.getId());
-
-        return ResponseEntity.noContent().build();
-    }
 }

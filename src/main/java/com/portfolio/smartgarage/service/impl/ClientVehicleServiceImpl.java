@@ -110,19 +110,11 @@ public class ClientVehicleServiceImpl implements ClientVehicleService {
 
     @Override
     @Transactional
-    public void deleteVehicle(Long id, Long currentUserId) {
+    public void deleteVehicleByAdmin(Long id) {
         ClientVehicle vehicle = clientVehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
 
-        if (!vehicle.getOwner().getId().equals(currentUserId)) {
-            throw new AccessDeniedException("You do not have permission to delete this vehicle.");
-        }
-
-        vehicleValidator.validateDeletionAllowed(vehicle);
-
         visitRepository.deleteAllByClientVehicleId(id);
-
         clientVehicleRepository.delete(vehicle);
     }
-
 }

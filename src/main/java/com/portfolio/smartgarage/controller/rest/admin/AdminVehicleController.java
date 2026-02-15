@@ -132,4 +132,14 @@ public class AdminVehicleController {
         vehicleService.archiveVehicleFromCatalog(id);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "Delete client vehicle", description = "Permanently removes a vehicle from the system. This action is restricted to employees only.")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteVehicle(
+            @Parameter(description = "ID of the vehicle to delete") @PathVariable Long id) {
+
+        clientVehicleService.deleteVehicleByAdmin(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }
