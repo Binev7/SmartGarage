@@ -21,14 +21,14 @@ The application is successfully deployed and can be accessed live here:
 * 📖 **[Interactive API Docs (Swagger UI)](https://smartgarage.onrender.com/swagger-ui.html)**
 
 ### 🌿 Deployment Strategy: `feat/deployment` branch
-While the core development is maintained in the `main` branch, all deployment-specific configurations and optimizations for the cloud environment are isolated in the **`feat/deployment`** branch. 
+While the core development is maintained in the `main` branch, all deployment-specific configurations and optimizations for the cloud environment are isolated in the **`feat/deployment`** branch.
 
 Key cloud infrastructure & optimizations include:
 * **Render Hosting & Uptime Optimization:** The application is hosted on Render. To bypass the free-tier container sleep cycle (cold starts), I implemented a custom, lightweight `/ping` endpoint integrated with UptimeRobot. This keeps the server awake 24/7, ensuring a lightning-fast user experience.
 * **TiDB Cloud Database Integration:** The production database is powered by TiDB (a distributed, MySQL-compatible database). Spring Data JPA configurations and the Hibernate dialect (`MySQLDialect`) were specifically adjusted to ensure seamless schema generation and query execution tailored for the TiDB environment.
 * **Secure Environment Variables:** Configured `application.properties` to securely consume Render's native Environment Variables for sensitive data (JWT Secrets, Database URL/Credentials) rather than hardcoding them into the repository.
 * **Security Adjustments:** Customized the Spring `SecurityConfig` to explicitly permit health-check pings from external monitors, while keeping the core business logic strictly secured via JWT.
-  
+
 ## Tech stack
 
 - Java 17 (toolchain configured in `build.gradle`)
@@ -75,7 +75,7 @@ Recommended environment variables (see `application.properties` usage below):
 - MAIL_PASSWORD - SMTP password
 - CURRENCY_API_KEY - (optional) for currency conversion feature
 
-You can export these for your shell (zsh) before running: 
+You can export these for your shell (zsh) before running:
 
 ```bash
 export DB_USERNAME=mydbuser
