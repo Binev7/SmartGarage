@@ -43,11 +43,6 @@
                 <div class="d-grid mt-4 gap-2">
                     <a th:href="@{/customer/visits/book/step1(vehicleId=${v.id})}"
                        class="btn btn-orange fw-bold rounded-0 py-3">BOOK NEW SERVICE</a>
-
-                    <button type="button" class="btn btn-outline-danger rounded-0"
-                            data-bs-toggle="modal" data-bs-target="#deleteModal">
-                        DELETE VEHICLE
-                    </button>
                 </div>
             </div>
         </div>
@@ -77,33 +72,6 @@
                               th:text="${visit.status}">COMPLETED</span>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-black border border-secondary text-white">
-            <div class="modal-header border-secondary">
-                <h5 class="modal-title fw-bold">Delete Vehicle?</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-secondary">
-                Are you sure you want to remove the
-                <strong class="text-white" th:text="${v.brandName + ' ' + v.modelName}">Car</strong>
-                from your garage? This action cannot be undone.
-            </div>
-            <div class="modal-footer border-secondary">
-                <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Cancel</button>
-
-                <form th:action="@{/customer/vehicles/delete/{id}(id=${v.id})}" method="post">
-
-                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                    <input type="hidden" th:if="${_csrf == null}" name="_csrf" value="" />
-
-                    <button type="submit" class="btn btn-danger rounded-0 px-4">Yes, Delete</button>
-                </form>
             </div>
         </div>
     </div>
