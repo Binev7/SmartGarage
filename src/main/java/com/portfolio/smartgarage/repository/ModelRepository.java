@@ -15,8 +15,6 @@ public interface ModelRepository extends JpaRepository<Model, Long> {
 
     List<Model> findAllByBrandIdAndActiveTrue(Long brandId);
 
-   /* boolean existsByNameAndBrandId(String name, Long brandId);*/
-
     Optional<Model> findByNameAndBrandId(String name, Long brandId);
 
     @Modifying

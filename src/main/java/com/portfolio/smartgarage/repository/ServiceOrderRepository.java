@@ -9,6 +9,4 @@ import java.util.List;
 @Repository
 public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Long> {
 
-    /*@Query("SELECT so FROM ServiceOrder so WHERE so.clientVehicle.licensePlate = :licensePlate")
-    List<ServiceOrder> findByPlate(String licensePlate);*/
 }
