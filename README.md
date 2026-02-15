@@ -13,68 +13,26 @@ SmartGarage is a demo/portfolio Spring Boot application for a car garage. It sup
 - Employee/Admin flow: manage services, visits, generate PDF invoices
 - REST API for programmatic access and MVC controllers that serve Thymeleaf templates for the UI
 
-## 📸 Screenshots
+## 🚀 Live Demo & Deployment
 
-### Customer Portal
-Manage vehicles and book appointments easily.
+The application is successfully deployed and can be accessed live here:
 
-<p align="center">
-  <img
-    src="https://github.com/user-attachments/assets/5b7f1f09-9cb9-4bb9-bddf-5cbb12925a67"
-    alt="Customer Dashboard"
-    width="700"
-  >
-</p>
+* 👉 **[Smart Garage - Live Demo](https://smartgarage.onrender.com)**
+* 📖 **[Interactive API Docs (Swagger UI)](https://smartgarage.onrender.com/swagger-ui.html)**
 
----
+### 🌿 Deployment Strategy: `feat/deployment` branch
+While the core development is maintained in the `main` branch, all deployment-specific configurations and optimizations for the cloud environment are isolated in the **`feat/deployment`** branch.
 
-### Booking Process
-Select vehicle, services, and check calendar availability.
-
-<p align="center">
-  <img
-    src="https://github.com/user-attachments/assets/a70e9a7d-a46a-4ac7-8977-0512d72c7e54"
-    alt="Booking Form"
-    width="700"
-  >
-</p>
-
----
-
-### Employee Administration
-Manage visits, update statuses, and create service orders.
-
-<p align="center">
-  <img
-    src="https://github.com/user-attachments/assets/01aeaa34-0aa5-4b67-89fc-599827c5dccf"
-    alt="Admin Dashboard"
-    width="700"
-  >
-</p>
-
----
-
-### PDF Invoicing & API
-Automatic invoice generation and full Swagger documentation.
-
-<p align="center">
-  <img
-    src="https://github.com/user-attachments/assets/69fd23bb-ca1b-4982-9432-66eedf817439"
-    alt="PDF Invoice"
-    width="45%"
-  >
-  <img
-    src="https://github.com/user-attachments/assets/79a41668-eca7-41ee-9ae1-8e028c2556d3"
-    alt="Swagger UI"
-    width="45%"
-  >
-</p>
-
+Key cloud infrastructure & optimizations include:
+* **Render Hosting & Uptime Optimization:** The application is hosted on Render. To bypass the free-tier container sleep cycle (cold starts), I implemented a custom, lightweight `/ping` endpoint integrated with UptimeRobot. This keeps the server awake 24/7, ensuring a lightning-fast user experience.
+* **TiDB Cloud Database Integration:** The production database is powered by TiDB (a distributed, MySQL-compatible database). Spring Data JPA configurations and the Hibernate dialect (`MySQLDialect`) were specifically adjusted to ensure seamless schema generation and query execution tailored for the TiDB environment.
+* **Secure Environment Variables:** Configured `application.properties` to securely consume Render's native Environment Variables for sensitive data (JWT Secrets, Database URL/Credentials) rather than hardcoding them into the repository.
+* **Security Adjustments:** Customized the Spring `SecurityConfig` to explicitly permit health-check pings from external monitors, while keeping the core business logic strictly secured via JWT.
 
 ## Tech stack
 
 - Java 17 (toolchain configured in `build.gradle`)
-- Spring Boot 4.x (see `build.gradle`)
+- Spring Boot 3.x (see `build.gradle`)
 - Spring Data JPA (Hibernate)
 - MariaDB (runtime driver included)
 - Spring Security with JWT
@@ -83,21 +41,23 @@ Automatic invoice generation and full Swagger documentation.
 - Springdoc OpenAPI (Swagger) for API docs
 - JUnit / Spring Boot Test for automated tests
 
-## Architecture & important folders
+## 🏗️ Architecture & Project Structure
 
-- `src/main/java/com/portfolio/smartgarage` - application package
-  - `controller/rest` - REST controllers (API)
-  - `controller/mvc` - MVC controllers serving templates
-  - `service` - business logic
-  - `repository` - JPA repositories
-  - `model` - JPA entities
-  - `security` - JWT utilities and filters
-  - `dto` - data transfer objects
-- `src/main/resources/templates` - Thymeleaf pages (customer, employee, auth pages)
-- `src/main/resources/static` - CSS/images
-- `db-create.sql` - SQL script to create sample data (brands, models, vehicles, services)
-- `build.gradle` - Gradle build file
-- `HELP.md` - extra reference links
+The application follows a standard, multi-tier Spring Boot architecture, strictly separating the web layer, business logic, and data access.
+
+* `src/main/java/.../smartgarage/` — **Root Application Package**
+    * 📁 `controller/rest/` — RESTful API controllers (returning JSON).
+    * 📁 `controller/mvc/` — Spring MVC controllers serving Thymeleaf templates.
+    * 📁 `service/` — Core business logic, external API integrations, and transaction management.
+    * 📁 `repository/` — Spring Data JPA interfaces for database operations.
+    * 📁 `model/` — JPA entity classes representing database tables.
+    * 📁 `security/` — JWT utilities, authentication filters, and Spring Security configurations.
+    * 📁 `dto/` — Data Transfer Objects used to decouple internal models from the external APIs and Views.
+* `src/main/resources/` — **Static Assets & Configuration**
+    * 📁 `templates/` — Server-side Thymeleaf HTML views (organized by `customer`, `employee`, and `auth`).
+    * 📁 `static/` — CSS stylesheets, JavaScript files, and images.
+* `db-create.sql` — SQL script containing initial DDL/DML to seed the database with demo data (brands, models, vehicles, services).
+* `build.gradle` — Gradle build configuration defining project dependencies and plugins.
 
 ## Prerequisites
 
@@ -115,7 +75,7 @@ Recommended environment variables (see `application.properties` usage below):
 - MAIL_PASSWORD - SMTP password
 - CURRENCY_API_KEY - (optional) for currency conversion feature
 
-You can export these for your shell (zsh) before running: 
+You can export these for your shell (zsh) before running:
 
 ```bash
 export DB_USERNAME=mydbuser
@@ -174,19 +134,6 @@ spring.datasource.url=jdbc:mariadb://localhost:3306/smart_garage_db?createDataba
 
 The repository includes `db-create.sql` at project root which seeds brands, models, vehicles and example services.
 
-To apply the script manually (using the mysql CLI):
-
-```bash
-# login to your MariaDB server
-mysql -u root -p < db-create.sql
-# or if you need to specify database/user
-mysql -u youruser -p -h localhost < db-create.sql
-```
-
-Notes:
-- The script uses `TRUNCATE` and manipulates foreign key checks. Use with caution in non-development environments.
-- The application is also configured with `spring.jpa.hibernate.ddl-auto=update`, so it will create/update schema automatically when you run it.
-
 ## Configuration (important keys in `application.properties`)
 
 File: `src/main/resources/application.properties` — the most important properties:
@@ -226,50 +173,6 @@ Important env vars summary:
 - DB_USERNAME, DB_PASSWORD, JWT_SECRET_KEY, MAIL_USERNAME, MAIL_PASSWORD, CURRENCY_API_KEY
 
 Security note: Do NOT store `JWT_SECRET_KEY` or mail credentials in version control. Use environment variables or a secret manager.
-
-## API / Endpoints (high-level overview)
-
-This section lists key API endpoints inferred from the controller classes. The app also exposes Swagger UI at `/swagger-ui.html`.
-
-Authentication (public):
-- POST /api/auth/login — JSON login, returns AuthResponseDto and sets `jwt` cookie
-- POST /api/auth/register — Register a new user
-- POST /api/auth/forgot-password — Initiate password reset (email)
-- POST /api/auth/reset-password — Reset using token
-
-Vehicles & catalog (authenticated; customer & employee):
-- GET /api/vehicles/brands — list brands
-- GET /api/vehicles/brands/{brandId}/models — list models for brand
-- GET /api/vehicles/models/{modelId}/years — list years for a model
-- GET /api/vehicles/my — get vehicles registered to the current user
-- POST /api/vehicles/my/register — register a vehicle to current user
-- GET /api/vehicles/{id} — get client-vehicle details (owner or employee)
-- DELETE /api/vehicles/{id} — delete a client vehicle (owner or employee)
-
-Services (customer & employee):
-- GET /api/services — list all services
-- GET /api/services/search?name={name} — search services by name
-- GET /api/services/{id} — get service by id
-
-Visits (booking & management):
-- POST /api/visits — book a visit (authenticated customer)
-- GET /api/visits/availability?startDate=YYYY-MM-DD — check calendar availability
-- GET /api/visits/{id}?currency=BGN|EUR|USD — get visit details
-- GET /api/visits/my-history — get current user's visit history (requires CUSTOMER role)
-- DELETE /api/visits/{id} — cancel a visit (owner or employee)
-
-Admin (EMPLOYEE role required):
-- POST /api/admin/services — create service
-- PUT /api/admin/services/{id} — update service
-- DELETE /api/admin/services/{id} — remove service
-- POST /api/admin/visits — create a visit (for existing customers)
-- POST /api/admin/visits/new-customer — register user + vehicle + visit in a single request
-- GET /api/admin/visits/report/{id} — detailed admin report for a visit
-- PATCH /api/admin/visits/{id}/status?status=IN_PROGRESS — update visit status
-- DELETE /api/admin/visits/{id} — delete visit
-
-Invoices (EMPLOYEE):
-- GET /api/invoices/download/{orderId} — generate and download invoice PDF
 
 Security and JWT details:
 - The app accepts JWT via an Authorization: Bearer <token> header or a cookie named `jwt`.
